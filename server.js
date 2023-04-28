@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
+app.set('view engine', 'ejs')
 
 
 // Make sure you place body-parser before your CRUD handlers!
@@ -30,8 +31,17 @@ MongoClient.connect(connectionString,
         //get handlers for handling index page
         app.get('/', (req, res) => {
             // Note: __dirname is the current directory you're in. Try logging it and see what you get!
-          res.sendFile(__dirname + '/index.html');
-      })
+         // res.sendFile(__dirname + '/index.html');
+
+          db.collection('daily-quotes')
+          .find()
+          .toArray()
+          .then(results => {
+            res.render('index.ejs', { quotes : results })
+          })
+         .catch(error => console.error(error))
+          
+      });
       
       //POST handlers for quotes to mongo db
         app.post('/quotes', (req, res) => {
@@ -42,9 +52,16 @@ MongoClient.connect(connectionString,
             .then(result => {
                 res.redirect('/')
             })
-            .catch(error => console.error(error))
-           // console.log(req.body)
-        })
+            .catch(error => console.error(error));
+        });
+
+        //GET quotes from database
+        // app.get('/', (req, res) => {
+           
+        // })
+
+
+  
     })
 
     //display error if there's problem connecting to database

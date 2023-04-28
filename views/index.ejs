@@ -41,11 +41,10 @@ color:#33FFF5;
         background: linear-gradient(to right, #536976, #BBD2C5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
     }
-
+    
     section {
         height: 1020px;
         width: 480px;
-        border: 1px solid #ccc;
     }
 
     header {
@@ -61,6 +60,10 @@ color:#33FFF5;
      
     main {
 
+    }
+
+    ul li {
+        list-style: none;
     }
 
 }
@@ -84,6 +87,17 @@ color:#33FFF5;
                 <button type="submit" class="btn customButton small">Submit</button>
             </div>
         </form>
+
+        <h2>Quotes</h2>
+        <ul class="quotes">
+            <% for(let i = 0; i < quotes.length; i++) { %>
+                <li class="quotes">
+                    <span><%= quotes[i].name %></span>:
+
+                    <span><%= quotes[i].quote %></span>
+                </li>
+                <% } %>
+        </ul>
     </section>
 </body>
 </html>
