@@ -6,98 +6,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/1f06ebc6ba.js" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+
     <title>My App</title>
-    <style>
-.customButton { 
-border:1px solid #000000;
-border-radius:3px;
-padding:3.8px 25.1px 10px 20.8px;
- margin:10px 10px 10px 10px;
-background-color:#2A3B42;
-color:#FAFAFA;
-font-weight:200;
-opacity:0.9;
-transition:6.6s;
-} 
-.customButton:hover {
-cursor:pointer;
-background-color:#B5B5B5;
-opacity:0.4;
-transition:2.5s;
-color:#33FFF5;
-} 
-
-@media screen and (max-width:480px) {
-
-
-
-    body {
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #BBD2C5;  /* fallback for old browsers */
-        background: -webkit-linear-gradient(to right, #536976, #BBD2C5);  /* Chrome 10-25, Safari 5.1-6 */
-        background: linear-gradient(to right, #536976, #BBD2C5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-    }
-    
-    section {
-        height: 1020px;
-        width: 480px;
-    }
-
-    header {
-        
-        display: flex;
-        justify-content: center;
-        padding: 30px;
-    }
-
-    .quote-icon {
-        display: inline-block;
-    }
-     
-    main {
-
-    }
-
-    ul li {
-        list-style: none;
-    }
-
-}
-    </style>
 </head>
 <body>
     <section>
         <header>
             <h1>Quote App</h1>
             <div class="quote-icon">
-            <img src="quote-icon-30.png" alt="Quote-icon" height="30px" width="30px"  /> 
+            <img src="/quote-icon-30.png" alt="Quote-icon" height="30px" width="30px"  /> 
             </div>
         </header>
-        <main>
-
-        </main>
-        <form action="/quotes" method="POST">
-            <input type="text" placeholder="Name" name="name" autocomplete="off" /><br /><br />
-            <textarea type="text" placeholder="quote" name="quote" autocomplete="off" ></textarea><br /><br />
-            <div class="html_button btn-center">
-                <button type="submit" class="btn customButton small">Submit</button>
+        <main class="layout">
+            <div>
+                <span class="p-card"> 
+                    <h2>Add quote</h2>
+                <form action="/quotes" method="POST">
+                    <input type="text" placeholder="Name" name="name" autocomplete="off" />
+                    <input type="text" placeholder="quote" name="quote" autocomplete="off" /><br /><br />
+                    <button type="submit" class="btn customButton small">Submit</button>
+                         
+                </form>
+                </span>
+                
             </div>
-        </form>
 
-        <h2>Quotes</h2>
-        <ul class="quotes">
-            <% for(let i = 0; i < quotes.length; i++) { %>
-                <li class="quotes">
-                    <span><%= quotes[i].name %></span>:
+            <!-- Update button for quotes -->
+                <div>
+                    <span class="p-card"> 
+                        <h2>Darth Vader invades!</h2>
+                        <p>Replace first Yoda's quote with a quote written by Darth Vader</p>
+                        <button id="updateButton">Replace Yoda's quote</button>    
+                    </span>   
+                 
+                </div>
 
-                    <span><%= quotes[i].quote %></span>
-                </li>
-                <% } %>
-        </ul>
+                <!--
+                    Delete Button for the quote  -->
+                <div>
+                    <span class="p-card">
+                        <h2>Remove Darth Vader!</h2>
+                        <p>Delete one Darth's quote.</p>
+                         <button id="deleteButton">Delete Yoda's quote</button> 
+                 </span>   
+                 </div>
+        </main>
     </section>
+
+    <!-- Quote Section -->
+
+    <section class="sector2">
+        <div>
+                   
+    
+            <span id="message"></span>
+            <h2>Quotes</h2>
+            <ul class="quotes">
+                <% for(let i = 0; i < quotes.length; i++) { %>
+                    <li class="quotes">
+                        <span><%= quotes[i].name %></span>:
+    
+                        <span><%= quotes[i].quote %></span>
+                    </li>
+                    <% } %>
+            </ul>
+        </div>
+      </section>
+
+    <script src="/main.js"></script>
 </body>
 </html>

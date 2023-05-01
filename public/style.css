@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #536976;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #292E49, #536976);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #292E49, #536976); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+.customButton { 
+    border:1px solid #000000;
+    border-radius:3px;
+    padding:3.8px 25.1px 10px 20.8px;
+     margin:10px 10px 10px 10px;
+    background-color:#2A3B42;
+    color:#FAFAFA;
+    font-weight:200;
+    opacity:0.9;
+    transition:6.6s;
+    } 
+    .customButton:hover {
+    cursor:pointer;
+    background-color:#B5B5B5;
+    opacity:0.4;
+    transition:2.5s;
+    color:#33FFF5;
+    } 
+
+    section {
+        display: flex;
+        flex-direction: column;
+    }
+    section > header {
+        display: flex;
+        justify-content: center;
+
+        border: 1px solid cyan;
+        border-radius: 3px;
+        padding: 10px 10px 2px 0px;
+        box-shadow: 3px 3px rgb(61, 60, 60), -1em 0 .4em rgb(104, 104, 74);
+        margin-bottom: 15px;
+        background-color: rgba(255, 255, 255, 0.932);
+    }
+
+    section > header > h1 {
+        font: 0.9em "Fira Sans", sans-serif;
+            padding-left: 10px;
+    }
+
+section > header > div > img {
+    display: block;
+}
+
+
+.layout {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+  
+    justify-content: space-evenly;
+    align-items: center;
+
+  }
+  
+  .layout div {
+    border: 1px solid black;
+    border-radius: 3px;
+    width: 30%;
+    height: 200px;
+    padding: 10px 10px 0px 5px;
+    margin: 5px;
+    background-color: rgba(255, 255, 255, 0.932);
+  }
+
+  .layout div .p-card h2 {
+    padding-bottom: 10px;
+  }
+
+  .layout div .p-card p {
+    padding-bottom: 10px;
+  }
+
+.layout div .p-card {
+    display: block;
+    line-height: 1.5em;
+    text-align: left;
+    margin: 10px;
+}
+  
+.sector2 {
+    display: flex;
+    justify-content: flex-start;
+
+  
+  }
+  
+  .sector2 div {
+    display: flex;
+    border-radius: 5px;
+    border: 1px solid #333;
+    flex-direction: column;
+    padding: 10px;
+    margin: 10px;
+    background-color: rgba(255, 255, 255, 0.932);
+  }
+
+    @media screen and (max-width:480px) {
+    
+    
+    
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #BBD2C5;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #536976, #BBD2C5);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #536976, #BBD2C5); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    
+        }
+    
+        section {
+            height: 1020px;
+            width: 480px;
+        }
+    
+        header {
+            
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+        }
+    
+        .quote-icon {
+            display: inline-block;
+        }
+         
+        main {
+    
+        }
+    
+        ul li {
+            list-style: none;
+        }
+    
+    }

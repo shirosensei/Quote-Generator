@@ -3,7 +3,18 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
 const app = express();
-app.set('view engine', 'ejs')
+
+
+//This will generate HTML that contains the quotes. This process is called rendering the HTML.
+app.set('view engine', 'ejs');
+
+//This tells Express we’re using EJS as the template engine. This is to be above of handlers
+app.use(express.static('public'));
+
+
+//boby Parser middleware for json data
+app.use(bodyParser.json())
+
 
 
 // Make sure you place body-parser before your CRUD handlers!
@@ -34,11 +45,19 @@ MongoClient.connect(connectionString,
          // res.sendFile(__dirname + '/index.html');
 
           db.collection('daily-quotes')
+
+          //This is a find() function that will find the quotes
           .find()
+            //This is toArray() that will convert the data into an array
           .toArray()
+
           .then(results => {
+
+            //Thi is a render syntax method built into Express’s response to pass the quote data into index.ejs (view, locals). 
             res.render('index.ejs', { quotes : results })
+
           })
+
          .catch(error => console.error(error))
           
       });
@@ -55,11 +74,51 @@ MongoClient.connect(connectionString,
             .catch(error => console.error(error));
         });
 
-        //GET quotes from database
-        // app.get('/', (req, res) => {
-           
-        // })
+        //PUT Request to update Quotes
+        app.put('/quotes', (req, res) => {
+         
+          const  updateName = req.body.name;
+          const updateQuote = req.body.quote;
 
+
+            quotesCollection
+            .findOneAndUpdate(
+                { name: 'Yoda' }, 
+            { $set: { 
+                name: updateName,
+                quote: updateQuote,
+
+            },
+        }, 
+        {
+            upsert: true,
+        })
+            .then(result => {
+
+                if(result.ok) return res.json('Success')
+            })
+            .then(res => {
+                res.redirect('/')
+             //   window.location.reload(true)
+            })
+            .catch(error => console.error(error))
+
+        })
+
+        //DELETE Request to remove quotes from mongodb
+        app.delete('/quotes', (req, res) => {
+            const  updateName = req.body.name;
+
+            quotesCollection
+            .deleteOne({ name: updateName })
+            .then(result => {
+                if (result.deletedCount === 0) {
+                    return res.json('No quote to delete')
+                }
+                res.json(`Deleted Darth Vader's quote`);
+            })
+            .catch(error => console.error(error));
+        })
 
   
     })
