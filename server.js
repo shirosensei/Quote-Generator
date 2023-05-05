@@ -5,19 +5,15 @@ const MongoClient = require('mongodb').MongoClient;
 const app = express();
 
 
-//This will generate HTML that contains the quotes. This process is called rendering the HTML.
-app.set('view engine', 'ejs');
+  // Set up EJS as the view engine
+  app.set('view engine', 'ejs');
 
 //This tells Express we’re using EJS as the template engine. This is to be above of handlers
 app.use(express.static('public'));
 
 
-//boby Parser middleware for json data
+  // Set up middleware to handle JSON and form data
 app.use(bodyParser.json())
-
-
-
-// Make sure you place body-parser before your CRUD handlers!
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //connect url to connect mongodb database
@@ -34,7 +30,7 @@ MongoClient.connect(connectionString,
     const db = client.db('quotes');
     
     //this is collection for storing information in database
-    const quotesCollection = db.collection('daily-quotes');
+    const quotesCollection = db.collection('daily_quotes');
     
     //Display to acknowledged connection to database
         console.log('Connected to Database');
@@ -44,7 +40,7 @@ MongoClient.connect(connectionString,
             // Note: __dirname is the current directory you're in. Try logging it and see what you get!
          // res.sendFile(__dirname + '/index.html');
 
-          db.collection('daily-quotes')
+          db.collection('daily_quotes')
 
           //This is a find() function that will find the quotes
           .find()
@@ -75,17 +71,17 @@ MongoClient.connect(connectionString,
         });
 
         //PUT Request to update Quotes
-        app.put('/quotes', (req, res) => {
+        app.put('/quotes', async (req, res) => {
          
-          const  updateName = req.body.name;
+          const  updateName = req.body.author;
           const updateQuote = req.body.quote;
+         
 
-
-            quotesCollection
+          await  quotesCollection
             .findOneAndUpdate(
-                { name: 'Yoda' }, 
+                { author: 'Yoda' }, 
             { $set: { 
-                name: updateName,
+                author: updateName,
                 quote: updateQuote,
 
             },
@@ -95,11 +91,18 @@ MongoClient.connect(connectionString,
         })
             .then(result => {
 
-                if(result.ok) return res.json('Success')
+                if(result.ok) return res.json({
+                    author: updateName,
+                    quote: updateQuote,
+                });
+                console.log({
+                    author: updateName,
+                    quote: updateQuote,
+                })
             })
             .then(res => {
-                res.redirect('/')
-             //   window.location.reload(true)
+              res.redirect('/')
+                // window.location.reload(true)
             })
             .catch(error => console.error(error))
 
@@ -107,15 +110,18 @@ MongoClient.connect(connectionString,
 
         //DELETE Request to remove quotes from mongodb
         app.delete('/quotes', (req, res) => {
-            const  updateName = req.body.name;
+            const  updateName = req.body.author;
 
             quotesCollection
-            .deleteOne({ name: updateName })
+            .deleteOne({ author: updateName }, (err, result) => {
+                if (err) return res.status(500).send();
+            })
             .then(result => {
                 if (result.deletedCount === 0) {
                     return res.json('No quote to delete')
                 }
-                res.json(`Deleted Darth Vader's quote`);
+                res.json(`Deleted Successful`);
+                res.redirect('/');
             })
             .catch(error => console.error(error));
         })

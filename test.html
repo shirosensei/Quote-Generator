@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table id="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- data rows will be added dynamically with JavaScript -->
+        </tbody>
+      </table>
+      
+      <script>
+        // assume we have a table element with id "data-table" and a row with class "data-row" to display data
+
+function addDataToTable(data) {
+  // create a new row element
+  const newRow = document.createElement("tr");
+  newRow.classList.add("data-row");
+  
+  // create new cells for each piece of data
+  const nameCell = document.createElement("td");
+  nameCell.innerText = data.name;
+  const ageCell = document.createElement("td");
+  ageCell.innerText = data.age;
+  const emailCell = document.createElement("td");
+  emailCell.innerText = data.email;
+  
+  // append cells to the new row
+  newRow.appendChild(nameCell);
+  newRow.appendChild(ageCell);
+  newRow.appendChild(emailCell);
+  
+  // append the new row to the table
+  const dataTable = document.getElementById("data-table");
+  dataTable.appendChild(newRow);
+}
+
+function deleteDataFromTable(dataId) {
+  // find the row with the corresponding data ID and remove it
+  const rowToDelete = document.querySelector(`.data-row[data-id="${dataId}"]`);
+  rowToDelete.remove();
+}
+
+function updateDataInTable(data) {
+  // find the row with the corresponding data ID and update its cells
+  const rowToUpdate = document.querySelector(`.data-row[data-id="${data.id}"]`);
+  rowToUpdate.querySelector(".name-cell").innerText = data.name;
+  rowToUpdate.querySelector(".age-cell").innerText = data.age;
+  rowToUpdate.querySelector(".email-cell").innerText = data.email;
+}
+
+      </script>
+</body>
+</html>
