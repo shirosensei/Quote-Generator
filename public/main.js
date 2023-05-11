@@ -6,7 +6,7 @@ const quoteContainer = document.getElementById('quote-container');
 const newQuoteBtn = document.getElementById('new-quote-btn');
 const keyPara = document.getElementById("key");
 const valuePara = document.getElementById("value");
- 
+ const quoteOfTheDay = document.getElementById('quoteOfTheDay')
 
 class Quote {
     constructor(author, quote) {
@@ -112,83 +112,140 @@ newQuoteBtn.addEventListener('click', async (e) => {
  e.preventDefault();
    const newQuote = new Quote();
    newQuote.getNewQuote();
+
+   updateButton.style.display = 'none';
+
+   setInterval(() => {
+      // toggle the display property of the button every 5 seconds
+      updateButton.style.display = updateButton.style.display === 'none' ? 'inline-block' : 'none';
+     updateButton.style.backgroundColor = 'hsl(223, 90%, 60%)'
+  }, 5000);
+  
+
+
 });
 
 //Button to add a generated quote
 updateButton.addEventListener('click', async (e) => {
     e.preventDefault();
-
 const updateQuote = new Quote();
 updateQuote.updateMongoDB();
+
+updateButton.style.display = 'none';
+
+   setInterval(() => {
+      // toggle the display property of the button every 5 seconds
+      deleteButton.style.display = deleteButton.style.display === 'none' ? 'inline-block' : 'none';
+      deleteButton.style.backgroundColor = 'rgb(122, 74, 14)';
+      updateButton.style.display = 'none';
+  }, 5000);
+
 })
   
+const selectedRadio = document.querySelector('input[type="radio"]');
+
 //Button to delete a quote
 deleteButton.addEventListener('click', async (e) => {
 e.preventDefault();
   // Get the selected radio button
-  const selectedRadio = document.querySelector('input[type="radio"]:checked');
 
-const myQuote = new Quote(selectedRadio.name, selectedRadio.value);
+
+const myQuote =  new Quote(selectedRadio.name, selectedRadio.value);
 myQuote.deleteFromMongoDB(myQuote)
 })
 
 
-//  //Set PUT Request here    
-// updateButton.addEventListener('click', async (e) => {
-//     e.preventDefault();
+// Add event listener to radio buttons
+const radioButtons = document.querySelectorAll('input[type="radio"]');
+radioButtons.forEach(function(radioButton) {
+  radioButton.addEventListener('change', function() {
+    if (this.checked) {
+      deleteButton.style.display = 'inline-block';
+    } else {
+      deleteButton.style.display = 'none';
+    }
+  });
+});
 
-// // get references to the two paragraph elements
-// const key = keyPara.quoteContent;
-// const value = valuePara.quoteContent;
+// Function to get the current date as a string in the format "YYYY-MM-DD"
+function getCurrentDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${day}-${month}-${year}`;
+}
 
-//     try {
-//         const response = await fetch(`/quotes`, {
-//             method: 'put',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//               },
-//               body: JSON.stringify({
-//                 author: key,
-//                 quote: value
-                
-//               }),
-//         })
-//         let data = await response.json();
-//         console.log(data);
+// Function to check if 24 hours have passed since the last quote update
+function has24HourPassed(lastUpdateDate) {
+  const currentDate = getCurrentDate();
+  return currentDate !== lastUpdateDate;
+}
 
-//            const { author, quote } = data
-//             const li = document.createElement('li');
-//             li.innerquote = `${author}: ${quote}`;
-//             quoteList.appendChild(li);
+// Fetch or Generate a random quote of the day
+function getRandomQuote() {
+    fetch('https://api.quotable.io/random')
+    .then(response => {
+      if(!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+      return response.json();
+    })
+    .then(data => { 
+      let { author, content } = data
+      displayQuote({ author, content });
+      return { author, content };
+     
 
-//     } catch (err) {
-//         console.error(err);
-//     } 
-// })
+    })
+      
+    .catch(error => console.error(error))
+  }
 
+  function displayQuote({ author, content }) {
+ // let { content, author } = data;
+    const quoteTextElement = document.getElementById("quoteText");
+    const quoteAuthorElement = document.getElementById("quoteAuthor");
+    quoteTextElement.textContent = `${content}`;
+    quoteAuthorElement.textContent = `___${author}`;
+  }
 
-// deleteButton.addEventListener('click', async (e) => {
-//     e.preventDefault();
-    
-//        await fetch('/quotes', {
-//             method: 'delete',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//               },
-//             body: JSON.stringify({ 
-//                 author: 'Darth Vader' 
-//             }),
-//         })
-//         .then(res => {
-//             if (res.ok) return res.json();
-//         })
-//         .then(data => {
-//             if(data === 'No quote to delete') {
-//                 messageDiv.quoteContent = 'No quote to delete'
-//             } else {
-//                 window.location.reload();
-//             }
-//         })
-//         .catch(error => console.error(error));
-//     })
-    
+  //Function to update the quote of the day
+  function updateQuoteOfTheDay() {
+    const lastUpdateDate = localStorage.getItem('quoteOfTheDayLastUpdate');
+    const storedQuote = localStorage.getItem('quoteOfTheDay');
+
+    if (lastUpdateDate && has24HourPassed(lastUpdateDate)) {
+      getRandomQuote({ author, content })
+      .then(data => {
+        displayQuote(data.author, data.content);
+        localStorage.setItem('quoteOfTheDay', JSON.stringify({ author, content }));
+        localStorage.setItem('quoteOfTheDayLastUpdate', getCurrentDate());
+      })
+      .catch(error => console.error(error))
+
+  } else if (storedQuote) {
+
+    displayQuote(storedQuote);
+
+  } else {
+
+    getRandomQuote()
+    .then(data => {
+      displayQuote(data.author, data.content);
+      localStorage.setItem('quoteOfTheDay', JSON.stringify({ author, content }));
+      localStorage.setItem('quoteOfTheDayLastUpdate', getCurrentDate());
+    })
+    .catch(error => console.error(error))
+
+  }
+}
+
+// Call the updateQuoteOfTheDay function to set the quote of the day
+updateQuoteOfTheDay();
+
+  // //Set quote of the day
+  // getRandomQuote();
+
+  // //Display the quote 
+  // displayQuote();

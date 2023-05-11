@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/1f06ebc6ba.js" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="/theme.css">
     <link rel="stylesheet" type="text/css" href="/style.css" />
 
     <title>My App</title>
@@ -13,7 +13,7 @@
 <body>
     <section>
         <header>
-            <h1>Random Quote App</h1>
+            <h1>Random Quote Generator</h1>
             <div class="quote-icon">
             <img src="/quote-icon-30.png" alt="Quote-icon" height="30px" width="30px"  /> 
             </div>
@@ -21,9 +21,9 @@
         <main class="layout">
             <div>
                 <span class="p-card"> 
-                    <h2>Add quote</h2>
+                    <h2>Insert quote</h2>
                 <form action="/quotes" method="POST">
-                    <input type="text" placeholder="Name" name="author" autocomplete="off" />
+                    <input type="text" placeholder="Name of Author" name="author" autocomplete="off" />
                     <input type="text" placeholder="quote" name="quote" autocomplete="off" /><br /><br />
                     <button type="submit" class="btn customButton small">Submit</button>
                          
@@ -39,13 +39,13 @@
                         <p>Replace first Yoda's quote with a quote written by Darth Vader</p>
                         -->
                        
-                        <h2>Generate Quote Generator</h2>
+                        <h2>Random Quote</h2>
                         <span id="quote-container">
                           <p id="key" name="author"></p>
                           <p id="value" name="quote"></p>
                         </span>
-                        <button id="new-quote-btn">Generate Random Quote</button>
-                        <button id="updateButton">Add quote to Database</button>    
+                        <button id="new-quote-btn">Generate Quote</button>
+                        <button id="updateButton" style="display:none;">Add to Favorites</button>    
                        
                     </span>    
                  
@@ -55,12 +55,18 @@
                     Delete Button for the quote  -->
                 <div>
                     <span class="p-card">
-                        <h2>Delete Quote!</h2>
-                        <p>Delete the last quote.</p>
-                         <!-- <button id="deleteButton">Delete Yoda's quote</button>  -->
-                        <button id="deleteButton">Delete quote</button> 
-                     
+                        <span class="container">
+                            <h2>Quote of the Day</h2>
+                            <img src="/lightbulb.png" style="position:absolute; display: inline-flex;" width="40" height="40" alt="Quote of the Day" title="Quote of the Day">
+                        </span>
 
+                        <p id="quoteOfTheDay"></p>
+                         <!-- <button id="deleteButton">Delete Yoda's quote</button>  -->
+                         <h3 id="quoteText"></h3>
+                         <p id="quoteAuthor"></p>
+                     
+                    
+                    
                                 
                         </span>   
                 
@@ -75,20 +81,48 @@
                    
     
             <span id="message"></span>
-            <h2>Quotes</h2>
+            <h3>Favorite Quotes</h3>
             <ul class="quotes" id="quoteList">
                 <% for(let i = 0; i < quotes.length; i++) { %>
                     <li class="quotes">
                         <label for="">
                             <input type="radio" name="<%= quotes[i].author %>" value="<%= quotes[i].quote %>">
-                             <%= quotes[i].author %>: <%= quotes[i].quote %>
+                             <%= quotes[i].author %>: <%= quotes[i].quote %> 
+                             <button id="deleteButton" style="display:none;">Delete quote</button>
                         </label>
                     </li>
                     <% } %>
             </ul>
+            <ul class="themetoggle">
+                <li id="themeToggle">
+                    <a href="#" class="themeToggleLink">
+                      <span class="material-icons">wb_sunny</span>
+                    </a>
+                  </li>
+                      </ul>
         </div>
       </section>
-
+      <footer>
+        <div class="footer-content">
+            <div class="footer-subscribe">
+                <h3>Subscribe to Daily Quotes</h3>
+                <p>Enter your email address:</p>
+                <input type="email" id="email">
+                <button id="subscribeBtn">Subscribe</button>
+                <p id="subscribeMsg"></p>
+              </div>
+           
+            
+            <ul class="footer-links">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+       
+          </div>
+         
+      </footer>
     <script src="/main.js"></script>
+    <script src="/theme.js"></script>
 </body>
 </html>
