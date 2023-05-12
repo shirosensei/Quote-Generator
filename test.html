@@ -45,7 +45,7 @@ span.material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
-  font-size: 16px;  
+  font-size: 1.2rem;  
   display: inline-block;
   line-height: 1;
   text-transform: none;
@@ -93,13 +93,14 @@ nav {
   padding: 15px 50px;
   box-shadow: 10px 10px 10px rgba(128, 128, 128, 0.458);
   color: white;
+
 }
 
 nav ul {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 20px;
+
 }
 
 li {
@@ -119,6 +120,44 @@ li a:hover {
   border-bottom: 4px #f1c40f solid;
   transition: 0.5s;
 }
+
+li.search span {
+  display: inline-block;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.5s;
+
+}
+
+li.search .search-field {
+  display: inline-block;
+  overflow: hidden;
+  background: #f1c40f;
+  box-shadow: 10px 10px 10px rgba(128, 128, 128, 0.458);
+  transition: max-width 0.5s  ease-in-out;
+  max-width: 0;
+  z-index: 1;
+
+/* max-width: 0;
+overflow: hidden;
+transition: max-width 0.5s ease-in-out; */
+
+}
+
+nav .search-field.active {
+  overflow: hidden;
+  max-width: 120px;
+  transition: max-width 0.5s  ease-in-out;
+
+}
+
+
+li.search .search-field input {
+  height: 30px;
+  text-align: left;
+  padding: 5px;
+}
+
 
 .hide {
   top: 70px
@@ -184,15 +223,23 @@ li a:hover {
 }
 
 .layout {
-  height: 568px;
 
   display: flex;
+  justify-content: space-evenly;
   gap: 16px;
-
-  justify-content: space-between;
   align-items: center;
+  margin-top: 15px;
+  max-width: 1200px;
+  
 }
 
+.layout div {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 300px;
+  border: 1px solid black;
+}
   </style>
 </head>
 <body>
@@ -208,21 +255,40 @@ li a:hover {
     
   <!--  LINK -->
     <ul id="nav-links">
-      <li><a href="#" class="links">Home</a></li>
-       <li><a href="#" class="links">About</a></li>
-       <li><a href="#" class="links">Search</a></li>
-       <li><a href="#" class="links">Contact</a></li>
-       <li id="themeToggle">
+      <li id="themeToggle">
         <a href="#" class="themeToggleLink">
           <span class="material-icons">wb_sunny</span>
         </a>
+      </li>
+      <li><a href="#" class="links">Home</a></li>
+       <li><a href="#" class="links">About</a></li>
+       <li><a href="#" class="links">Contact</a></li>
+      <li class="search">
+        <span class="material-icons" onclick="toggleSearchField()">search</span>
+        <div class="search-field" id="searchField">
+          <input type="text" placeholder="Enter search term" onblur="hideSearchField()">
+        </div>
+ 
       </li>
     </ul>
   </nav>
   
   </header>
+
   <section class="layout">
-    <div>1</div>
+    <div>
+      <div>
+        <span class="p-card"> 
+          <h2>Insert quote</h2>
+      <form action="/quotes" method="POST">
+          <input type="text" placeholder="Name of Author" name="author" autocomplete="off" />
+          <input type="text" placeholder="quote" name="quote" autocomplete="off" /><br /><br />
+          <button type="submit" class="btn customButton small">Submit</button>
+               
+      </form>
+      </span>
+      </div>
+    </div>
     <div>2</div>
     <div>3</div>
   </section>
@@ -261,11 +327,11 @@ function updateTheme() {
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.classList.add('dark');
       themeToggle.classList.add('dark');
-      themeToggle.querySelector('span').textContent = 'dark_mode';
+      themeToggle.querySelector('span').textContent = 'wb_sunny';
     } else {
       document.documentElement.classList.remove('dark');
       themeToggle.classList.remove('dark');
-      themeToggle.querySelector('span').textContent = 'wb_sunny';
+      themeToggle.querySelector('span').textContent = 'dark_mode';
     }
   } catch (err) {
     console.log(err);
@@ -273,6 +339,17 @@ function updateTheme() {
 }
 
 updateTheme();
+
+function toggleSearchField() {
+  const searchField = document.getElementById('searchField');
+  searchField.classList.toggle('active');
+}
+
+function hideSearchField() {
+  const searchField = document.getElementById('searchField');
+  searchField.classList.remove('active');
+}
+
 
   </script>
 </body>
