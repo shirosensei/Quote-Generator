@@ -56,7 +56,7 @@
                     </li> -->
                     <li class="search">
                         <a href="#" class="links" id="search-tag">
-                        <span class="material-icons" onclick="toggleSearchField()">search</span>
+                        <span class="material-icons" id="search-icon" onclick="toggleSearchField()">search</span>
                         <div class="search-field" id="searchField">
                           <input type="text" placeholder="search quote" onblur="hideSearchField()">
                         </div>
@@ -72,11 +72,11 @@
 
                 <div>
                     <span class="p-card"> 
-                        <h2>Insert quote</h2>
+                        <h2>Insert Quote</h2>
                     <form action="/quotes" method="POST">
                         <input type="text" placeholder="Name of Author" name="author" autocomplete="off" />
-                        <input type="text" placeholder="quote" name="quote" autocomplete="off" /><br /><br />
-                        <button type="submit" class="btn customButton small">Submit</button>
+                        <input type="text" placeholder="quote" name="quote" autocomplete="off" />
+                        <button type="submit" class="btn customButton small">Add</button>
                              
                     </form>
                     </span>
@@ -85,15 +85,11 @@
     
                 <!-- Update button for quotes -->
                      <div>
-                        <span class="p-card"> 
-                            <!-- <h2>Random Quote Generator</h2>
-                            <p>Replace first Yoda's quote with a quote written by Darth Vader</p>
-                            -->
-                           
+                        <span class="p-card">                           
                             <h2>Random Quote</h2>
                             <span id="quote-container">
-                              <p id="key" name="author"></p>
                               <p id="value" name="quote"></p>
+                              <p id="key" name="author"></p>
                             </span>
                             <button id="new-quote-btn">Generate Quote</button>
                             <button id="updateButton" style="display:none;">Add to Favorites</button>    
@@ -108,12 +104,12 @@
                         <span class="p-card">
                             <span class="container">
                                 <h2>Quote of the Day</h2>
-                                <img src="/lightbulb.png" style="position:absolute; display: inline-flex;" width="40" height="40" alt="Quote of the Day" title="Quote of the Day">
+                                <img src="/lightbulb.png" width="40" height="40" alt="Quote of the Day" title="Quote of the Day">
                             </span>
     
                             <p id="quoteOfTheDay"></p>
                             <button id="deleteButton" style="display:none;"> Yoda's quote</button>   
-                              <h3 id="quoteText"></h3>
+                              <p id="quoteText"></p>
                              <p id="quoteAuthor"></p>
                          
                         
@@ -128,39 +124,44 @@
 
                      <!-- Quote Section -->
 
-    <!-- <section class="sector2">
+ <section class="sector2">
         <div>
+            <span class="p-card"> 
+                <h3>Favorite Quotes</h3>
+                <ul class="quotes" id="quoteList">
+                    <% for(let i = 0; i < quotes.length; i++) { %>
+                        <li class="quotes1">
+                            <label for="">
+                                <p></p> <input type="radio" name="<%= quotes[i].author %>" value="<%= quotes[i].quote %>">
+                                 <%= quotes[i].author %>: <%= quotes[i].quote %> </p>
+                                 <button id="deleteButton" style="display:none;">Delete quote</button>
+                            </label>
+                        </li>
+                        <% } %>
+                </ul>
+              </span> 
                    
     
             <span id="message"></span>
-            <h3>Favorite Quotes</h3>
-            <ul class="quotes" id="quoteList">
-                <% for(let i = 0; i < quotes.length; i++) { %>
-                    <li class="quotes">
-                        <label for="">
-                            <input type="radio" name="<%= quotes[i].author %>" value="<%= quotes[i].quote %>">
-                             <%= quotes[i].author %>: <%= quotes[i].quote %> 
-                             <button id="deleteButton" style="display:none;">Delete quote</button>
-                        </label>
-                    </li>
-                    <% } %>
-            </ul>
+         
            
         </div>
       </section>
-        </main> -->
+        </main> 
+
+     
 
       <footer>
         <div class="footer-content">
             <div class="footer-subscribe">
-                <h3>Subscribe to Daily Quotes</h3>
+                <h4>Subscribe to Daily Quotes</h4>
                 <p>Enter your email address:</p>
                 <input type="email" id="email">
                 <button id="subscribeBtn">Subscribe</button>
                 <p id="subscribeMsg"></p>
               </div>
            
-            <p>Copyright © Quote Generator 2023</p>
+            <p>&copy; 2023 Quote Generator. All rights reserved.</p>
           </div>
          
       </footer>
