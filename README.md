@@ -1,5 +1,5 @@
 
-# Quote Generator (CRUD) 
+# Quote API Web App Generator (CRUD) 
 
 The Quote API Web App Generator is a web application that allows users to generate and manage quotes. It leverages an external API to fetch a "Quote of the Day" and provides features such as dark and light modes, generating new quotes, and the ability to store quotes in a MongoDB database. Here's an overview of its functionality:
 
