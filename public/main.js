@@ -49,7 +49,6 @@ class Quote {
                   body: JSON.stringify({
                      author: author,
                    quote: quote,
-                   _id
                   }),
             })
             const data = await response.json();
