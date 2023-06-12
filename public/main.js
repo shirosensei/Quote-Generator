@@ -1,71 +1,66 @@
+'use strict';
+
 const updateButton = document.getElementById('updateButton');
 const deleteButton = document.getElementById('deleteButton');
 const messageDiv = document.getElementById('message');
 const quoteList = document.getElementById('quoteList');
 const quoteContainer = document.getElementById('quote-container');
 const newQuoteBtn = document.getElementById('new-quote-btn');
-const keyPara = document.getElementById("key");
-const valuePara = document.getElementById("value");
+const authorElement = document.getElementById("key");
+const quoteElement = document.getElementById("value");
  const quoteOfTheDay = document.getElementById('quoteOfTheDay')
 
 class Quote {
-    constructor(author, quote) {
+    constructor(author, quote, _id) {
         this.author = author;
         this.quote = quote;
         this.id = null;
     }
 
-    author() {
-        return this.author;
-    }
-
-    quote() {
-        return this.quote;
-    }
 
     // Function to get a new quote from the API
     async getNewQuote() {
     const response = await fetch('https://type.fit/api/quotes');
     const data = await response.json();
     const quotes = data;
-    const randomIndex = Math.floor(Math.random() * 1643);
+    const randomIndex = Math.floor(Math.random() * quotes.length);
     const randomQuote = quotes[randomIndex];
-    const { author, text } = randomQuote;
-    const quote = `${text}`;
-    const newQuote = new Quote(author, quote);
-    keyPara.textContent = `${author}`;
-    valuePara.textContent = `${quote}`;
-
-    return newQuote;
-
-     }
-
-
-        
-     async updateMongoDB() {
-
-        try {
+    let { author, text } = randomQuote;
+    let quote = text
+    // Create a new quote object
+    const newQuote = new Quote(author, quote, _id);
+    // Render the quote to the DOM
+    return this.renderQuote(newQuote);
+    }
+    // Function to render a quote to the DOM
+    renderQuote(quote) {
+      quoteElement.innerText = quote.quote;
+      authorElement.innerText = quote.author;
+      }
+    //Function to update the quote into MongoDB        
+     async updateMongoDB(author, quote) {
       
-        this.author = keyPara.textContent
-         this.quote = valuePara.textContent;
-           
+        try {
             const response = await fetch(`/quotes`, {
                 method: 'put',
                 headers: {
                     'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({
-                    author: this.author,
-                    quote: this.quote
-
+                     author: author,
+                   quote: quote,
+                   _id
                   }),
             })
-            const data = await response.json({});
-            console.log(data);
+            const data = await response.json();
+            console.log({ data });
+            console.log('Quote Id', data._id);
+            
+
             const li = document.createElement('li');
             li.innerHTML = `${data.author}: ${data.quote}`;
             li.setAttribute('class', 'quotes');
-            quoteList.appendChild(li);
+           quoteList.appendChild(li);
             return data;
                         
         } catch (err) {
@@ -74,19 +69,16 @@ class Quote {
 
      }
 
-     async deleteFromMongoDB(myQuote) {
+
+     async deleteFromMongoDB(id) {
         try {
           
-          const response = await fetch(`/quotes`, 
-          {
+          const response = await fetch(`/quotes/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify(myQuote),
-        }
-         
-         );
+        });
          const data = await response.json();
          console.log(data);
          if(data === 'No quote to delete') {
@@ -105,53 +97,29 @@ class Quote {
 
     }
 
-
-
  //Button to generate a new quote
 newQuoteBtn.addEventListener('click', async (e) => {
  e.preventDefault();
    const newQuote = new Quote();
    newQuote.getNewQuote();
-
-   updateButton.style.display = 'none';
-
-   setInterval(() => {
-      // toggle the display property of the button every 5 seconds
-      updateButton.style.display = updateButton.style.display === 'none' ? 'inline-block' : 'none';
-     updateButton.style.backgroundColor = 'hsl(223, 90%, 60%)'
-  }, 5000);
-  
-
-
 });
 
 //Button to add a generated quote
 updateButton.addEventListener('click', async (e) => {
     e.preventDefault();
-const updateQuote = new Quote();
-updateQuote.updateMongoDB();
-
-updateButton.style.display = 'none';
-
-   setInterval(() => {
-      // toggle the display property of the button every 5 seconds
-      deleteButton.style.display = deleteButton.style.display === 'none' ? 'inline-block' : 'none';
-      deleteButton.style.backgroundColor = 'rgb(122, 74, 14)';
-      updateButton.style.display = 'none';
-  }, 5000);
-
+    const newQuote = new Quote();
+    newQuote.updateMongoDB(authorElement.textContent, quoteElement.textContent, _id);
 })
   
-const selectedRadio = document.querySelector('input[type="radio"]');
-
 //Button to delete a quote
 deleteButton.addEventListener('click', async (e) => {
 e.preventDefault();
   // Get the selected radio button
-
-
-const myQuote =  new Quote(selectedRadio.name, selectedRadio.value);
-myQuote.deleteFromMongoDB(myQuote)
+  const selectedRadio = document.querySelector('input[type="radio"]:checked');
+  // Get the value of the selected radio button
+  const id = selectedRadio.value;
+  const newQuote = new Quote();
+  newQuote.deleteQuote(id);
 })
 
 
@@ -176,76 +144,85 @@ function getCurrentDate() {
   return `${day}-${month}-${year}`;
 }
 
+//Function to get the current time s a string in the format ""HH:MM:SS"
+function getCurrentTime() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+// Function to update the time every second
+function updateTime() {
+  const currentTimeElement = document.getElementById('currentTime');
+  currentTimeElement.textContent = `${getCurrentTime()}`;
+}
+
+// Update the time immediately
+updateTime();
+
+// Update the time every second
+setInterval(updateTime, 1000);
+
+
 // Function to check if 24 hours have passed since the last quote update
 function has24HourPassed(lastUpdateDate) {
   const currentDate = getCurrentDate();
   return currentDate !== lastUpdateDate;
 }
 
-// Fetch or Generate a random quote of the day
-function getRandomQuote() {
-    fetch('https://api.quotable.io/random')
-    .then(response => {
-      if(!response.ok) {
-        throw new Error('Network response was not ok.');
-      }
-      return response.json();
-    })
-    .then(data => { 
-      let { author, content } = data
-      displayQuote({ author, content });
-      return { author, content };
-     
-
-    })
-      
-    .catch(error => console.error(error))
-  }
-
-  function displayQuote({ author, content }) {
- // let { content, author } = data;
-    const quoteTextElement = document.getElementById("quoteText");
-    const quoteAuthorElement = document.getElementById("quoteAuthor");
-    quoteTextElement.textContent = `${content}`;
-    quoteAuthorElement.textContent = `___${author}`;
-  }
-
-  //Function to update the quote of the day
-  function updateQuoteOfTheDay() {
-    const lastUpdateDate = localStorage.getItem('quoteOfTheDayLastUpdate');
-    const storedQuote = localStorage.getItem('quoteOfTheDay');
-
-    if (lastUpdateDate && has24HourPassed(lastUpdateDate)) {
-      getRandomQuote({ author, content })
-      .then(data => {
-        displayQuote(data.author, data.content);
-        localStorage.setItem('quoteOfTheDay', JSON.stringify({ author, content }));
-        localStorage.setItem('quoteOfTheDayLastUpdate', getCurrentDate());
-      })
-      .catch(error => console.error(error))
-
-  } else if (storedQuote) {
-
-    displayQuote(storedQuote);
-
-  } else {
-
-    getRandomQuote()
-    .then(data => {
-      displayQuote(data.author, data.content);
-      localStorage.setItem('quoteOfTheDay', JSON.stringify({ author, content }));
-      localStorage.setItem('quoteOfTheDayLastUpdate', getCurrentDate());
-    })
-    .catch(error => console.error(error))
-
+//Function to get random quote of the day from api
+async function getRandomQuote() {
+  try {
+    const response = await fetch('https://api.quotable.io/random');
+    if (!response.ok) {
+      throw new Error('Network response was not ok.');
+    }
+    const data = await response.json();
+    let { author, content } = data;
+    return { author, content }
+  } catch (error) {
+    console.error(error);
   }
 }
 
+// Function to display current quote of the day
+async function displayQuote({ author, content }) {
+  const quoteTextElement = document.getElementById("quoteText");
+  const quoteAuthorElement = document.getElementById("quoteAuthor");
+  quoteTextElement.textContent = `${content}`;
+  quoteAuthorElement.textContent = `___${author}`;
+}
+
+//Function to check anď update quote after 24hours
+function updateQuoteOfTheDay() {
+  const lastUpdateDate = localStorage.getItem('quoteOfTheDayLastUpdate');
+  const storedQuote = localStorage.getItem('quoteOfTheDay');
+
+  if (lastUpdateDate && has24HourPassed(lastUpdateDate)) {
+    getRandomQuote()
+      .then(data => {
+        displayQuote(data);
+        localStorage.setItem('quoteOfTheDay', JSON.stringify(data));
+        localStorage.setItem('quoteOfTheDayLastUpdate', getCurrentDate());
+      })
+      .catch(error => console.error(error));
+
+  } else if (storedQuote) {
+     displayQuote(JSON.parse(storedQuote));
+
+  } else {
+    getRandomQuote()
+      .then(data => {
+        displayQuote(data);
+        localStorage.setItem('quoteOfTheDay', JSON.stringify(data));
+        localStorage.setItem('quoteOfTheDayLastUpdate', getCurrentDate());
+      })
+      .catch(error => console.error(error));
+  }
+}
+
+
 // Call the updateQuoteOfTheDay function to set the quote of the day
 updateQuoteOfTheDay();
-
-  // //Set quote of the day
-  // getRandomQuote();
-
-  // //Display the quote 
-  // displayQuote();

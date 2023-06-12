@@ -70,7 +70,7 @@
   <main>
             <section>
 
-                <div>
+                <div class="first">
                     <span class="p-card"> 
                         <h2>Insert Quote</h2>
                     <form action="/quotes" method="POST">
@@ -84,7 +84,7 @@
                 </div>
     
                 <!-- Update button for quotes -->
-                     <div>
+                     <div class="second">
                         <span class="p-card">                           
                             <h2>Random Quote</h2>
                             <span id="quote-container">
@@ -92,7 +92,7 @@
                               <p id="key" name="author"></p>
                             </span>
                             <button id="new-quote-btn">Generate Quote</button>
-                            <button id="updateButton" style="display:none;">Add to Favorites</button>    
+                            <button id="updateButton" style="">Add to Favorites</button>    
                            
                         </span>    
                     
@@ -100,7 +100,7 @@
     
                     <!--
                         Delete Button for the quote -->
-                    <div>
+                    <div class="third">
                         <span class="p-card">
                             <span class="container">
                                 <h2>Quote of the Day</h2>
@@ -108,13 +108,12 @@
                             </span>
     
                             <p id="quoteOfTheDay"></p>
-                            <button id="deleteButton" style="display:none;"> Yoda's quote</button>   
                               <p id="quoteText"></p>
                              <p id="quoteAuthor"></p>
                          
                         
                         
-                                    
+                            <p id="currentTime"></p>
                              </span>   
                     
                      </div>
@@ -132,9 +131,10 @@
                     <% for(let i = 0; i < quotes.length; i++) { %>
                         <li class="quotes1">
                             <label for="">
-                                <p></p> <input type="radio" name="<%= quotes[i].author %>" value="<%= quotes[i].quote %>">
+                                <p> <input type="radio" name="<%= quotes[i].author %>" value="<%= quotes[i].quote %>">
                                  <%= quotes[i].author %>: <%= quotes[i].quote %> </p>
-                                 <button id="deleteButton" style="display:none;">Delete quote</button>
+                                 <button id="deleteButton" style="display:none;"> Delete</button>   
+                           
                             </label>
                         </li>
                         <% } %>

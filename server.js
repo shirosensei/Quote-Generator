@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
 const app = express();
 
 
@@ -18,6 +19,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //connect url to connect mongodb database
 const connectionString = "mongodb+srv://service:BP0OQfZsEzFQEwA1@cluster0.byqceiq.mongodb.net/quotes?retryWrites=true&w=majority";
+
+mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.error('Failed to connect to MongoDB:', error);
+  });
+
 
 //mongodb client to database
 MongoClient.connect(connectionString,  
