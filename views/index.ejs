@@ -130,9 +130,12 @@
                 <ul class="quotes" id="quoteList">
                     <% for(let i = 0; i < quotes.length; i++) { %>
                         <li class="quotes1">
-                            <label for="">
-                                <p> <input type="radio" name="<%= quotes[i].author %>" value="<%= quotes[i].quote %>">
-                                 <%= quotes[i].author %>: <%= quotes[i].quote %> </p>
+
+                            <label for="quote<%= i %>">
+                                <blockquote>
+                                    <input type="radio" name="selectedQuote" value="<%= quotes[i]._id %>">
+                                    <%= quotes[i].quote %><strong>&nbsp;__<%= quotes[i].author %></strong>
+                                </blockquote> 
                                  <button id="deleteButton" style="display:none;"> Delete</button>   
                            
                             </label>

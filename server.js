@@ -2,55 +2,49 @@ const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 const MongoClient = require('mongodb').MongoClient;
-const mongoose = require('mongoose');
 const app = express();
 
 
-  // Set up EJS as the view engine
-  app.set('view engine', 'ejs');
+let db, 
+dbConnectionStr = process.env.MONGO_URI, 
+dbName = 'quotes',
+quotesCollection
+
+//mongodb client to database
+MongoClient.connect(dbConnectionStr,  
+    {
+    useUnifiedTopology: true,
+    })
+    .then(client => {    
+    //Display to acknowledged connection to database
+        console.log(`Connected to ${dbName} Database`);
+
+      // Get the reference to the database
+        db = client.db(dbName);
+      
+    // Get the reference to the collection
+    quotesCollection = db.collection('daily_quotes');
+
+        }).catch((err) =>{
+          throw err;
+          });
+
+    // Set up EJS as the view engine
+app.set('view engine', 'ejs');
 
 //This tells Express we’re using EJS as the template engine. This is to be above of handlers
 app.use(express.static('public'));
 
-
-  // Set up middleware to handle JSON and form data
+// Set up middleware to handle JSON and form data
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-
-//connect url to connect mongodb database
-const connectionString = "mongodb+srv://service:BP0OQfZsEzFQEwA1@cluster0.byqceiq.mongodb.net/quotes?retryWrites=true&w=majority";
-
-mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.error('Failed to connect to MongoDB:', error);
-  });
-
-
-//mongodb client to database
-MongoClient.connect(connectionString,  
-    {
-    useUnifiedTopology: true,
-    })
-    .then(client => {
-
-        //changing the database from the previous to something else
-    const db = client.db('quotes');
     
-    //this is collection for storing information in database
-    const quotesCollection = db.collection('daily_quotes');
-    
-    //Display to acknowledged connection to database
-        console.log('Connected to Database');
-      
         //get handlers for handling index page
         app.get('/', (req, res) => {
             // Note: __dirname is the current directory you're in. Try logging it and see what you get!
          // res.sendFile(__dirname + '/index.html');
 
-          db.collection('daily_quotes')
+         quotesCollection
 
           //This is a find() function that will find the quotes
           .find()
@@ -58,10 +52,10 @@ MongoClient.connect(connectionString,
           .toArray()
 
           .then(results => {
-
-            //Thi is a render syntax method built into Express’s response to pass the quote data into index.ejs (view, locals). 
-            res.render('index.ejs', { quotes : results })
-
+            // Use map() to extract the object IDs from the results
+            const objectIds = results.map(quote => quote._id);
+            // Pass them along with our other arguments so they can be used by the next handler
+             res.render('index.ejs', { quotes : results })
           })
 
          .catch(error => console.error(error))
@@ -120,6 +114,8 @@ MongoClient.connect(connectionString,
 
         //DELETE Request to remove quotes from mongodb
         app.delete('/quotes', (req, res) => {
+          let id = req.query._id;
+          console.log(req)
             const  updateName = req.body.author;
 
             quotesCollection
@@ -135,17 +131,8 @@ MongoClient.connect(connectionString,
             })
             .catch(error => console.error(error));
         })
-
+    
   
-    })
-
-    //display error if there's problem connecting to database
-    .catch(err => console.error(err)) 
-
-
-
-
-
 app.listen(3000, () => {
     console.log('Node is running on port 3000! You better catch it')
 })

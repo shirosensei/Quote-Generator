@@ -28,7 +28,7 @@ class Quote {
     let { author, text } = randomQuote;
     let quote = text
     // Create a new quote object
-    const newQuote = new Quote(author, quote, _id);
+    const newQuote = new Quote(author, quote);
     // Render the quote to the DOM
     return this.renderQuote(newQuote);
     }
@@ -52,9 +52,7 @@ class Quote {
                   }),
             })
             const data = await response.json();
-            console.log({ data });
-            console.log('Quote Id', data._id);
-            
+            console.log({ data });            
 
             const li = document.createElement('li');
             li.innerHTML = `${data.author}: ${data.quote}`;
@@ -69,10 +67,10 @@ class Quote {
      }
 
 
-     async deleteFromMongoDB(id) {
+     async deleteFromMongoDB(_id) {
         try {
           
-          const response = await fetch(`/quotes/${id}`, {
+          const response = await fetch(`/quotes/${_id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -107,7 +105,7 @@ newQuoteBtn.addEventListener('click', async (e) => {
 updateButton.addEventListener('click', async (e) => {
     e.preventDefault();
     const newQuote = new Quote();
-    newQuote.updateMongoDB(authorElement.textContent, quoteElement.textContent, _id);
+    newQuote.updateMongoDB(authorElement.textContent, quoteElement.textContent);
 })
   
 //Button to delete a quote
@@ -115,11 +113,25 @@ deleteButton.addEventListener('click', async (e) => {
 e.preventDefault();
   // Get the selected radio button
   const selectedRadio = document.querySelector('input[type="radio"]:checked');
-  // Get the value of the selected radio button
-  const id = selectedRadio.value;
-  const newQuote = new Quote();
-  newQuote.deleteQuote(id);
-})
+  const radios = document.querySelector('input[type="radio"]');
+
+  
+  let idToDelete = '';
+  for (let i=0 ;i < radios.length; i++) {
+    if (radios[i].checked) {
+      idToDelete = parseInt(radios[i].value);
+      
+      console.log('Value to be deleted', idToDelete);
+      
+      };
+      }
+      try{        
+        console.log('Data to delete', idToDelete);
+        
+        await deleteFromMongoDb(idToDelete);
+
+        } catch(err){console.log("Error in deleting", err);}
+        });
 
 
 // Add event listener to radio buttons
