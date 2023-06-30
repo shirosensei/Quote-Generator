@@ -1,7 +1,7 @@
 'use strict';
 
 const updateButton = document.getElementById('updateButton');
-const deleteButton = document.getElementById('deleteButton');
+const deleteButton = document.querySelector('#deleteButton');
 const messageDiv = document.getElementById('message');
 const quoteList = document.getElementById('quoteList');
 const quoteContainer = document.getElementById('quote-container');
@@ -10,11 +10,14 @@ const authorElement = document.getElementById("key");
 const quoteElement = document.getElementById("value");
  const quoteOfTheDay = document.getElementById('quoteOfTheDay')
 
+ 
+
 class Quote {
     constructor(author, quote, _id) {
         this.author = author;
         this.quote = quote;
         this.id = null;
+        this.deleteFromMongoDB = this.deleteFromMongoDB.bind(this);
     }
 
 
@@ -66,34 +69,50 @@ class Quote {
 
      }
 
+     async deleteFromMongoDB(idToDelete) {
+      try {
+        
+        const response = await fetch(`/quotes/${idToDelete}`, {
+          method: 'DELETE',
+          headers: {
+              'Content-Type': 'application/json'
+            },
+      });
 
-     async deleteFromMongoDB(_id) {
-        try {
-          
-          const response = await fetch(`/quotes/${_id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-        });
-         const data = await response.json();
-         console.log(data);
-         if(data === 'No quote to delete') {
+      if(response.ok) {
+        const contentType = response.headers.get('Content-Type');
+        if(contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          console.log(data);
+
+          if(data === 'No quote to delete') {
             messageDiv.textContent = `No quote to delete`;
          } else {
             window.location.reload();
          }
-
+      
           return data;
-          
-        } catch (err) {
-          console.error(err);
+        } else {
+          // Handle non-JSON response
+        const text = await response.text();
+        console.log('Non-JSON response:', text);
+        // Handle the non-JSON response appropriately
+
         }
+      } else {
+        throw new Error('Network response was not OK.');
+
       }
-
-
+               
+      } catch (err) {
+        console.error(err);
+      }
     }
 
+
+}
+
+    
  //Button to generate a new quote
 newQuoteBtn.addEventListener('click', async (e) => {
  e.preventDefault();
@@ -107,31 +126,23 @@ updateButton.addEventListener('click', async (e) => {
     const newQuote = new Quote();
     newQuote.updateMongoDB(authorElement.textContent, quoteElement.textContent);
 })
+
+
   
 //Button to delete a quote
 deleteButton.addEventListener('click', async (e) => {
 e.preventDefault();
+
   // Get the selected radio button
   const selectedRadio = document.querySelector('input[type="radio"]:checked');
-  const radios = document.querySelector('input[type="radio"]');
-
   
-  let idToDelete = '';
-  for (let i=0 ;i < radios.length; i++) {
-    if (radios[i].checked) {
-      idToDelete = parseInt(radios[i].value);
-      
-      console.log('Value to be deleted', idToDelete);
-      
-      };
-      }
-      try{        
-        console.log('Data to delete', idToDelete);
-        
-        await deleteFromMongoDb(idToDelete);
+  //Selected radio object Id
+  const idToDelete = selectedRadio.value;
 
-        } catch(err){console.log("Error in deleting", err);}
-        });
+  const newQuote = new Quote();
+  await newQuote.deleteFromMongoDB(idToDelete);
+
+ });
 
 
 // Add event listener to radio buttons
@@ -139,12 +150,13 @@ const radioButtons = document.querySelectorAll('input[type="radio"]');
 radioButtons.forEach(function(radioButton) {
   radioButton.addEventListener('change', function() {
     if (this.checked) {
-      deleteButton.style.display = 'inline-block';
+      deleteButton.style.display = 'block';
     } else {
       deleteButton.style.display = 'none';
     }
   });
 });
+
 
 // Function to get the current date as a string in the format "YYYY-MM-DD"
 function getCurrentDate() {

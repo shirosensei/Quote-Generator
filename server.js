@@ -1,14 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 require('dotenv').config();
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient, ObjectId } = require('mongodb');
 const app = express();
 
 
-let db, 
-dbConnectionStr = process.env.MONGO_URI, 
-dbName = 'quotes',
-quotesCollection
+let db;
+const dbConnectionStr = process.env.MONGO_URI;
+const dbName = 'quotes';
+let quotesCollection;
+
+
+
 
 //mongodb client to database
 MongoClient.connect(dbConnectionStr,  
@@ -25,6 +28,7 @@ MongoClient.connect(dbConnectionStr,
     // Get the reference to the collection
     quotesCollection = db.collection('daily_quotes');
 
+//    console.log(`Connected to ${quotesCollection.collectionName} Database`);
         }).catch((err) =>{
           throw err;
           });
@@ -38,14 +42,14 @@ app.use(express.static('public'));
 // Set up middleware to handle JSON and form data
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-    
+
         //get handlers for handling index page
         app.get('/', (req, res) => {
             // Note: __dirname is the current directory you're in. Try logging it and see what you get!
          // res.sendFile(__dirname + '/index.html');
 
          quotesCollection
-
+            
           //This is a find() function that will find the quotes
           .find()
             //This is toArray() that will convert the data into an array
@@ -53,7 +57,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
           .then(results => {
             // Use map() to extract the object IDs from the results
-            const objectIds = results.map(quote => quote._id);
+      //      const objectIds = results.map(quote => quote._id);
+          
             // Pass them along with our other arguments so they can be used by the next handler
              res.render('index.ejs', { quotes : results })
           })
@@ -99,10 +104,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
                     author: updateName,
                     quote: updateQuote,
                 });
-                console.log({
-                    author: updateName,
-                    quote: updateQuote,
-                })
             })
             .then(res => {
               res.redirect('/')
@@ -113,21 +114,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
         })
 
         //DELETE Request to remove quotes from mongodb
-        app.delete('/quotes', (req, res) => {
-          let id = req.query._id;
-          console.log(req)
-            const  updateName = req.body.author;
+        app.delete('/quotes/:id', (req, res) => {
+            const objectIdString = req.params.id;
+           // Example usage of ObjectId
+            const objectId = new ObjectId(objectIdString);
+    
 
             quotesCollection
-            .deleteOne({ author: updateName }, (err, result) => {
-                if (err) return res.status(500).send();
+            .deleteOne({ _id : objectId }, (err, result) => {
+                if(err) {
+                    console.error('Error deleting document', err);
+                    return;
+                }
             })
             .then(result => {
                 if (result.deletedCount === 0) {
                     return res.json('No quote to delete')
                 }
-                res.json(`Deleted Successful`);
-                res.redirect('/');
+                console.log(`Deleted Successful`);
+                res.json({ message: 'Deleted Successful'});
             })
             .catch(error => console.error(error));
         })
