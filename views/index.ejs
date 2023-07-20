@@ -7,7 +7,7 @@
     <script src="https://kit.fontawesome.com/1f06ebc6ba.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/theme.css">
     <link rel="stylesheet" type="text/css" href="/style.css" />
-    <link rel="stylesheet" type="text/css" href="/all.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/all.min.css"> -->
 
 
     <title>My App</title>
@@ -58,7 +58,7 @@
                         <a href="#" class="links" id="search-tag">
                         <span class="material-icons" id="search-icon" onclick="toggleSearchField()">search</span>
                         <div class="search-field" id="searchField">
-                          <input type="text" placeholder="search quote" onblur="hideSearchField()">
+                          <input type="text" placeholder="search quote" id="searchQuote" onblur="hideSearchField()">
                         </div>
                         </a>
                  
@@ -125,6 +125,7 @@
 
  <section class="sector2">
         <div>
+            <form id="deleteForm">
             <span class="p-card"> 
                 <h3>Favorite Quotes</h3>
                 <ul class="quotes" id="quoteList">
@@ -133,10 +134,10 @@
 
                             <label for="quote<%= i %>">
                                 <blockquote>
-                                    <input type="radio" name="selectedQuoteId" value="<%= quotes[i]._id %>">
-                                    <%= quotes[i].quote %><strong>&nbsp;__<%= quotes[i].author %></strong>
+                                    <!-- <input type="radio" name="selectedQuoteId" value="<%= quotes[i]._id %>"> -->
+                                    <%= quotes[i].quote %><strong>&nbsp;__<%= quotes[i].author %></strong> &nbsp; <i class="gg-trash trash-icon" data-quote-id="<%= quotes[i]._id %>">  </i>
                                 </blockquote> 
-                                 <button id="deleteButton" style="display:none;"> Delete</button>   
+                                 <!-- <button id="deleteButton" style="display:none;"> Delete</button>    -->
                            
                             </label>
                         </li>
@@ -147,7 +148,7 @@
     
             <span id="message"></span>
          
-           
+        </form>
         </div>
       </section>
         </main> 
@@ -168,7 +169,7 @@
           </div>
          
       </footer>
-    <script src="/main.js"></script>
-    <script src="/theme.js"></script>
+    <script src="/main.js" defer></script>
+    <script src="/theme.js" defer></script>
 </body>
 </html>

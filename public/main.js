@@ -9,15 +9,15 @@ const newQuoteBtn = document.getElementById('new-quote-btn');
 const authorElement = document.getElementById("key");
 const quoteElement = document.getElementById("value");
  const quoteOfTheDay = document.getElementById('quoteOfTheDay')
-
- 
+ const trashIcons = document.querySelectorAll('.trash-icon');
+ const searchItem = document.getElementById('#searchQuote')
 
 class Quote {
     constructor(author, quote, _id) {
         this.author = author;
-        this.quote = quote;
-        this.id = null;
-        this.deleteFromMongoDB = this.deleteFromMongoDB.bind(this);
+        this.quote = quote;       
+         this.id = null;
+
     }
 
 
@@ -58,7 +58,7 @@ class Quote {
             console.log({ data });            
 
             const li = document.createElement('li');
-            li.innerHTML = `${data.author}: ${data.quote}`;
+            li.innerHTML = `${data.quote} __${data.author}`;
             li.setAttribute('class', 'quotes');
            quoteList.appendChild(li);
             return data;
@@ -69,45 +69,42 @@ class Quote {
 
      }
 
-     async deleteFromMongoDB(idToDelete) {
-      try {
+    //  async deleteFromMongoDB(idToDelete) {
+    //   try {
         
-        const response = await fetch(`/quotes/${idToDelete}`, {
-          method: 'DELETE',
-          headers: {
-              'Content-Type': 'application/json'
-            },
-      });
+    //     const response = await fetch(`/quotes/${idToDelete}`, {
+    //       method: 'DELETE',
+    //       headers: {
+    //           'Content-Type': 'application/json'
+    //         },
+    //   });
 
-      if(response.ok) {
-        const contentType = response.headers.get('Content-Type');
-        if(contentType && contentType.includes('application/json')) {
-          const data = await response.json();
-          console.log(data);
+    //   if(response.ok) {
+    //     const contentType = response.headers.get('Content-Type');
+    //     if(contentType && contentType.includes('application/json')) {
+    //       const data = await response.json();
+    //       console.log(data);
 
-          if(data === 'No quote to delete') {
-            messageDiv.textContent = `No quote to delete`;
-         } else {
-            window.location.reload();
-         }
+    //       if(data === 'No quote to delete') {
+    //         messageDiv.textContent = `No quote to delete`;
+    //      }
       
-          return data;
-        } else {
-          // Handle non-JSON response
-        const text = await response.text();
-        console.log('Non-JSON response:', text);
-        // Handle the non-JSON response appropriately
+    //     } else {
+    //       // Handle non-JSON response
+    //     const text = await response.text();
+    //     console.log('Non-JSON response:', text);
+    //     // Handle the non-JSON response appropriately
 
-        }
-      } else {
-        throw new Error('Network response was not OK.');
+    //     }
+    //   } else {
+    //     throw new Error('Network response was not OK.');
 
-      }
+    //   }
                
-      } catch (err) {
-        console.error(err);
-      }
-    }
+    //   } catch (err) {
+    //     console.error(err);
+    //   }
+    // }
 
 
 }
@@ -127,35 +124,104 @@ updateButton.addEventListener('click', async (e) => {
     newQuote.updateMongoDB(authorElement.textContent, quoteElement.textContent);
 })
 
+//delete quote from mongoDb
+trashIcons.forEach(icon => {
+  icon.addEventListener('click', async (event) => {
+    const quoteId = event.target.dataset.quoteId;
+    const deleted = await deleteQuote(quoteId);
 
-  
-//Button to delete a quote
-deleteButton.addEventListener('click', async (e) => {
-e.preventDefault();
-
-  // Get the selected radio button
-  const selectedRadio = document.querySelector('input[type="radio"]:checked');
-  
-  //Selected radio object Id
-  const idToDelete = selectedRadio.value;
-
-  const newQuote = new Quote();
-  await newQuote.deleteFromMongoDB(idToDelete);
-
- });
-
-
-// Add event listener to radio buttons
-const radioButtons = document.querySelectorAll('input[type="radio"]');
-radioButtons.forEach(function(radioButton) {
-  radioButton.addEventListener('change', function() {
-    if (this.checked) {
-      deleteButton.style.display = 'block';
-    } else {
-      deleteButton.style.display = 'none';
+    if (deleted) {
+      // Find the parent element (quote) and remove it from the DOM
+      const quoteElement = event.target.parentElement;
+      if (quoteElement) {
+        quoteElement.remove();
+      }
     }
+  })
+})
+
+//function to delete quote 
+async function deleteQuote(quoteId) {
+ 
+  try {
+
+    const response = await fetch(`/quotes/${quoteId}`, {
+      method: 'DELETE',
+      headers: {
+          'Content-Type': 'application/json'
+        },
   });
-});
+
+  if (response.ok) {
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      console.log(data);
+
+      if (data === 'No quote to delete') {
+        return 'No data to delete';
+      } else {
+        // Quote deleted successfully, you can handle it as needed
+       return true;
+      }
+    } else {
+      // Handle non-JSON response
+      const text = await response.text();
+      console.log('Non-JSON response:', text);
+      // Handle the non-JSON response appropriately
+    }
+  } else {
+    throw new Error('Network response was not OK.');
+  }
+  } catch(err) {
+    console.error(err);
+  }
+
+}
+
+
+//function to search for quote tags and author
+async function searchRandomQuote() {
+  const response = await fetch('https://api.quotable.io/random');
+  const data = response.json();
+  return data;
+}
+
+function getSearchRandomQuote(searchItem) {
+  return searchRandomQuote()
+  .then(quotes => {
+    const searchResult = quotes.filter(quote => {
+      const tagsMatch = quote.tags.some(tag => tag.includes(searchItem));
+      const authorMatch = quote.author.toLowerCase().includes(searchItem.toLowerCase());
+      return tagsMatch || authorMatch;
+    });
+
+    if(searchResult.length > 0) {
+      const randomIndex = Math.floor(Math.random() * searchResult.length);
+      return searchResult[randomIndex]
+    } else {
+      console.log("No matching results found");
+    }
+  })
+  .catch(error => {
+    console.log(`Error fetching API ${error}`);
+    return null;
+  })
+ 
+}
+
+
+getSearchRandomQuote(searchItem)
+.then(randomQuote => {
+  // Update UI with randomly selected quote and add timestamp for when it was fetched from server
+  if(randomQuote) {
+    document.getElementById('text').textContent = `"${randomQuote.content}" - ${randomQuote}`
+    console.log('Search Quote', randomQuote);
+      
+  } else {
+    console.log("No quotes found for the search term:", searchTerm);
+  }
+})
 
 
 // Function to get the current date as a string in the format "YYYY-MM-DD"
