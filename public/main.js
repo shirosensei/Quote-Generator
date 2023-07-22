@@ -10,7 +10,8 @@ const authorElement = document.getElementById("key");
 const quoteElement = document.getElementById("value");
  const quoteOfTheDay = document.getElementById('quoteOfTheDay')
  const trashIcons = document.querySelectorAll('.trash-icon');
- const searchItem = document.getElementById('#searchQuote')
+ const quoteDisplay = document.getElementById('quoteDisplay');
+
 
 class Quote {
     constructor(author, quote, _id) {
@@ -54,8 +55,7 @@ class Quote {
                    quote: quote,
                   }),
             })
-            const data = await response.json();
-            console.log({ data });            
+            const data = await response.json();          
 
             const li = document.createElement('li');
             li.innerHTML = `${data.quote} __${data.author}`;
@@ -68,43 +68,7 @@ class Quote {
         } 
 
      }
-
-    //  async deleteFromMongoDB(idToDelete) {
-    //   try {
-        
-    //     const response = await fetch(`/quotes/${idToDelete}`, {
-    //       method: 'DELETE',
-    //       headers: {
-    //           'Content-Type': 'application/json'
-    //         },
-    //   });
-
-    //   if(response.ok) {
-    //     const contentType = response.headers.get('Content-Type');
-    //     if(contentType && contentType.includes('application/json')) {
-    //       const data = await response.json();
-    //       console.log(data);
-
-    //       if(data === 'No quote to delete') {
-    //         messageDiv.textContent = `No quote to delete`;
-    //      }
-      
-    //     } else {
-    //       // Handle non-JSON response
-    //     const text = await response.text();
-    //     console.log('Non-JSON response:', text);
-    //     // Handle the non-JSON response appropriately
-
-    //     }
-    //   } else {
-    //     throw new Error('Network response was not OK.');
-
-    //   }
-               
-    //   } catch (err) {
-    //     console.error(err);
-    //   }
-    // }
+     
 
 
 }
@@ -179,50 +143,66 @@ async function deleteQuote(quoteId) {
 
 }
 
+const searchForm = document.getElementById('search-form')
 
-//function to search for quote tags and author
-async function searchRandomQuote() {
-  const response = await fetch('https://api.quotable.io/random');
-  const data = response.json();
-  return data;
-}
+searchForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
 
-function getSearchRandomQuote(searchItem) {
-  return searchRandomQuote()
-  .then(quotes => {
-    const searchResult = quotes.filter(quote => {
-      const tagsMatch = quote.tags.some(tag => tag.includes(searchItem));
-      const authorMatch = quote.author.toLowerCase().includes(searchItem.toLowerCase());
-      return tagsMatch || authorMatch;
-    });
+  const searchTag = document.getElementById('searchQuote');
 
-    if(searchResult.length > 0) {
-      const randomIndex = Math.floor(Math.random() * searchResult.length);
-      return searchResult[randomIndex]
-    } else {
-      console.log("No matching results found");
-    }
-  })
-  .catch(error => {
-    console.log(`Error fetching API ${error}`);
-    return null;
-  })
- 
-}
+  const tag = searchTag.value.toLowerCase().trim()
 
-
-getSearchRandomQuote(searchItem)
-.then(randomQuote => {
-  // Update UI with randomly selected quote and add timestamp for when it was fetched from server
-  if(randomQuote) {
-    document.getElementById('text').textContent = `"${randomQuote.content}" - ${randomQuote}`
-    console.log('Search Quote', randomQuote);
-      
+  if(tag !== '') {
+    fetchRandomQuoteWithTag(tag);
   } else {
-    console.log("No quotes found for the search term:", searchTerm);
+    displayErrorMessage('Please enter a tag.');
   }
 })
 
+async function fetchRandomQuoteWithTag(tag) {
+  try{
+  const response = await fetch(`https://api.quotable.io/random/?tags=${tag}`);
+if(!response.ok) {
+  throw Error(`${response.statusText}`) ; // HTTP error code!
+}
+  const data = await response.json();
+  displaySearchedQuote(data.content, data.author);
+
+    // Create the "Favorite" button
+    const favoriteButton = document.createElement('button');
+    favoriteButton.textContent = 'Add to Favorite';
+
+    favoriteButton.addEventListener('click', () => {
+      // Add the quote to MongoDB as a favorite
+      const newQuote = new Quote();
+      newQuote.updateMongoDB(data.author, data.content);
+    });
+
+    quoteDisplay.appendChild(favoriteButton)
+
+  console.log(data)
+} catch (err) {
+  console.log('Error', err) ; // HTTP error code
+  displayErrorMessage("Error fetching quote.");
+  }
+}
+
+function displaySearchedQuote(text, author) {
+  const searchQuoteElement = document.createElement('p');
+  searchQuoteElement.textContent = text;
+
+  const searchAuthorElement = document.createElement('p');
+  searchAuthorElement.textContent =`__ ${author}`;
+  searchAuthorElement.style.fontWeight = 'bold';
+
+  quoteDisplay.innerHTML = '';
+  quoteDisplay.appendChild(searchQuoteElement);
+  quoteDisplay.appendChild(searchAuthorElement);
+}
+
+function displayErrorMessage(message) {
+  quoteDisplay.innerHTML = `<p>${message}</p>`;
+}
 
 // Function to get the current date as a string in the format "YYYY-MM-DD"
 function getCurrentDate() {

@@ -37,29 +37,15 @@
                         <span class="material-icons">wb_sunny</span>
                     </a>
                     </li>
-                    <!-- <li class="search">
-                   
-                        <a href="#" class="links" id="search-tag">
-                            <span class="material-icons">search</span>
-                            <div>
-                                <form action="">                                    
-                                <input type="text" id="searchInput" placeholder="Search" />
-                                <div id="search-result"></div>
-                                </form>
-                            </div>
-                        </a>
-                        <form action="/search" method="get">
-                            <input type="text" name="query" placeholder="Search..." required>
-                            <button type="submit">Search</button>
-                          </form> 
-                          
-                    </li> -->
+           
                     <li class="search">
                         <a href="#" class="links" id="search-tag">
                         <span class="material-icons" id="search-icon" onclick="toggleSearchField()">search</span>
-                        <div class="search-field" id="searchField">
-                          <input type="text" placeholder="search quote" id="searchQuote" onblur="hideSearchField()">
+                       <form action="POST" id="search-form" name="search">
+                         <div class="search-field" id="searchField">
+                          <input type="text" placeholder="search quote" id="searchQuote" value="" onblur="hideSearchField()">
                         </div>
+                    </form>
                         </a>
                  
                       </li>
@@ -93,7 +79,7 @@
                             </span>
                             <button id="new-quote-btn">Generate Quote</button>
                             <button id="updateButton" style="">Add to Favorites</button>    
-                           
+                            <span id="quoteDisplay"></span>
                         </span>    
                     
                     </div>
