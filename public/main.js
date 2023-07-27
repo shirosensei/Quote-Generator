@@ -145,6 +145,7 @@ async function deleteQuote(quoteId) {
 
 const searchForm = document.getElementById('search-form')
 
+//Search form for a random quote
 searchForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 

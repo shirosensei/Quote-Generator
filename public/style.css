@@ -17,7 +17,7 @@
 
   }
 
-* {
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -60,8 +60,8 @@ position: relative;
   }
 
   .navbar-container div h1 {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 1.2rem;
+    font-weight: 800;
     margin-right: 1.2rem;
     font-family: Ubuntu, Arial, Helvetica, Verdana, sans-serif;
     color: var(--bluish-gray);
@@ -83,12 +83,12 @@ position: relative;
 .navbar-container ul li a {
   text-decoration: none;
   cursor: pointer;
-  padding: 10px 0px 10px 0px;
+  padding: 1rem 1rem;
   color: var(--bluish-gray);
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 700;
   font-family: Ubuntu, Arial, Helvetica, Verdana, sans-serif;
-  transition: 0.3s;
+  transition: 0.5s;
   }
 
   nav ul li a:hover {
@@ -101,7 +101,6 @@ position: relative;
   
       font-size: 1.6rem;
       font-weight: 500;
-      transition: all 1s ease-out;
 
     }
 
@@ -116,6 +115,12 @@ position: relative;
 
     }
 
+    .search {
+      float: right!important ;
+      
+    }
+
+  
     #searchInput {
       display: none;
       overflow: hidden;
@@ -494,6 +499,7 @@ li.search .search-field input {
     font-family: Ubuntu, Arial, Helvetica, Verdana, sans-serif;
     font-weight: 500;
     margin-top: 5px;
+    font-style: bold;
 
   }
 
@@ -781,6 +787,10 @@ div.mobile-nav {
           padding: 0;
           }
 
+          .p-card + h2:nth-of-type(2)
+           {
+            display: none;
+          }
 
         .p-card p {
           margin: 0;
