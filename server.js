@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 require("dotenv").config();
-const { connectToDatabase, getQuotesCollection, ObjectId } = require("./db");
+const { connectToDatabase, getQuotesCollection, ObjectId } = require("./api/db.js");
 const app = express();
 
 app.use(cors());
@@ -86,9 +86,8 @@ app.put("/quotes", async (req, res) => {
   }
 });
 
-
 //DELETE Request to remove quotes from mongodb
-app.delete("/quotes/:id", (req, res) => {
+app.delete("/quotes/:id", async (req, res) => {
   const id = req.params.id;
 
   // Check if the ID is a valid ObjectId
@@ -101,18 +100,13 @@ app.delete("/quotes/:id", (req, res) => {
 
   const quotesCollection = getQuotesCollection();
 
-  const result = quotesCollection.deleteOne({ _id: objectId });
+  const result = await quotesCollection.deleteOne({ _id: objectId });
 
+  if (result.deletedCount === 0) {
+    return res.status(404).json({ message: "No quote to delete" });
+  }
 
-
-      if (result.deletedCount === 0) {
-        return res.json("No quote to delete");
-      }
-
-      console.log(`Deleted Successful`);
-      res.json({ message: "Deleted Successful" });
-
-   
+  res.json({ message: "Deleted successfully" });
 });
 
 app.listen(3000, () => {
