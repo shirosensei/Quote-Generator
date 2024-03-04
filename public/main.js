@@ -186,39 +186,27 @@ searchForm.addEventListener("submit", async (event) => {
 
 async function fetchRandomQuoteWithTag(tag) {
   try {
-    const response = await fetch(
-      `https://juvenile-alder-quill.glitch.me/api/quotes?tag=${tag}`
-    );
-    if (!response.ok) {
-      throw Error(`${response.statusText}`); // HTTP error code!
-    }
-    const data = await response.json();
-    displaySearchedQuote(data.quote, data.author);
+    // Fetch all quote data
+    const randomData = await fetchQuoteData();
 
-    // Create the "Favorite" button
-    const favoriteButton = document.createElement("button");
-    favoriteButton.textContent = "Add to Favorite";
-
-    favoriteButton.addEventListener("click", async () => {
-      // Add the quote to MongoDB as a favorite
-      const newQuote = new Quote();
-      const result = newQuote.updateMongoDB(data.author, data.quote);
-
-      if (result) {
-        // Clear the displayed quote and author after successful addition
-        const quoteField = document.getElementById("value"); // Assuming #value is for quote
-        const authorField = document.getElementById("key"); // Assuming #key is for author
-
-        quoteField.textContent = "";
-        authorField.textContent = "";
-
-        displayMessage("Quote added to favorites successfully!", "success");
-      } else {
-        displayMessage("Failed to add quote to favorites.", "error");
-      }
+    // Filter the quotes based on the provided tag
+    const filteredQuotes = randomData.filter((item) => {
+      return Array.isArray(item.tags) && item.tags.includes(tag);
     });
 
-    quoteDisplay.appendChild(favoriteButton);
+    if (filteredQuotes.length === 0) {
+      displayErrorMessage("No quotes found for the given tag.");
+      return null;
+    }
+
+    // Randomly pick a quote from the filtered list
+    const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+    const randomQuote = filteredQuotes[randomIndex];
+
+    // Display the quote and author
+    displaySearchedQuote(randomQuote.quote, randomQuote.author);
+
+    return randomQuote; // Return the random quote for further use
   } catch (err) {
     console.log("Error", err); // HTTP error code
     displayErrorMessage("Error fetching quote.");
