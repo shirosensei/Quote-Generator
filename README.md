@@ -7,7 +7,7 @@ It leverages an external API to fetch a "Quote of the Day" and provides features
 
 
 
-![Project Demo](https://ibb.co/hKmCgbZ)
+![Project Demo](<a href="https://ibb.co/mhGv7zK"><img src="https://i.ibb.co/mhGv7zK/Animation.gif" alt="Animation" border="0"></a>)
 
 Here's an overview of its functionality:
 
