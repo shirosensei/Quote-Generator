@@ -6,7 +6,7 @@ It leverages an external API to fetch a "Quote of the Day" and provides features
 
 
 
-![Project Demo](<img src="https://i.ibb.co/mhGv7zK/Animation.gif" width="800" alt="Quote Generator Demo"> ) 
+![Project Demo](https://i.ibb.co/mhGv7zK/Animation.gif | width=800) 
 
 Here's an overview of its functionality:
 
