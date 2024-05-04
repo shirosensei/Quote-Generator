@@ -6,7 +6,7 @@ It leverages an external API to fetch a "Quote of the Day" and provides features
 
 
 
-![Project Demo] <img src="https://github.com/shirosensei/Quote-Generator/blob/main/Animation.gif" width="400">
+<img src="https://github.com/shirosensei/Quote-Generator/blob/main/Animation.gif" alt="Project Demo" width="400">
 
 Here's an overview of its functionality:
 
