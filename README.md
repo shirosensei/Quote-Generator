@@ -7,7 +7,7 @@ It leverages an external API to fetch a "Quote of the Day" and provides features
 
 
 
-![Project Demo](https://gifyu.com/image/SGlTN)
+![Project Demo](https://ibb.co/hKmCgbZ)
 
 Here's an overview of its functionality:
 
