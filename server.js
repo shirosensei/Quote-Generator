@@ -53,30 +53,37 @@ app.post("/quotes", async (req, res) => {
 
 //PUT Request to update Quotes
 app.put("/quotes", async (req, res) => {
-  const updateName = req.body.author;
-  const updateQuote = req.body.quote;
-
-  await quotesCollection
-    .findOneAndUpdate(
-      { author: "Yoda" },
+  try {
+    const quotesCollection = getQuotesCollection();
+    const { author, quote } = req.body;
+    const result = await quotesCollection.findOneAndUpdate(
+      { author },
       {
         $set: {
-          author: updateName,
-          quote: updateQuote,
+          author: updateName || author,
+          quote: updateQuote || quote,
         },
       },
       {
         upsert: true,
       }
-    )
-    .then((result) => {
-      if (result.ok)
-        return res.json({
-          author: updateName,
-          quote: updateQuote,
-        });
-    })
-    .catch((error) => console.error(error));
+    );
+
+    if (result.ok) {
+      res.json({
+        mesage: "Quote updated successfully",
+        author: updateName || author,
+        quote: updateQuote || quote,
+      });
+    } else {
+      res.status(500).json({ message: "Failed to update quote" });
+    }
+  } catch (error) {
+    console.error("Error updating quote:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating quote", error: error.message });
+  }
 });
 
 //DELETE Request to remove quotes from mongodb
