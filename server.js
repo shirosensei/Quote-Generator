@@ -38,7 +38,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-//POST handlers for quotes to mongo db
+// POST handlers for quotes to mongo db
 app.post("/quotes", async (req, res) => {
   try {
     const quotesCollection = getQuotesCollection();
@@ -86,27 +86,33 @@ app.put("/quotes", async (req, res) => {
   }
 });
 
+
 //DELETE Request to remove quotes from mongodb
 app.delete("/quotes/:id", (req, res) => {
-  const objectIdString = req.params.id;
-  // Example usage of ObjectId
-  const objectId = new ObjectId(objectIdString);
+  const id = req.params.id;
 
-  quotesCollection
-    .deleteOne({ _id: objectId }, (err, result) => {
-      if (err) {
-        console.error("Error deleting document", err);
-        return;
-      }
-    })
-    .then((result) => {
+  // Check if the ID is a valid ObjectId
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid ID format" });
+  }
+
+  // Example usage of ObjectId
+  const objectId = new ObjectId(id);
+
+  const quotesCollection = getQuotesCollection();
+
+  const result = quotesCollection.deleteOne({ _id: objectId });
+
+
+
       if (result.deletedCount === 0) {
         return res.json("No quote to delete");
       }
+
       console.log(`Deleted Successful`);
       res.json({ message: "Deleted Successful" });
-    })
-    .catch((error) => console.error(error));
+
+   
 });
 
 app.listen(3000, () => {
