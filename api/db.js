@@ -1,15 +1,15 @@
 const { MongoClient, ObjectId } = require("mongodb");
 
-let db;
+let db; // Reference to database
+let quotesCollection; // Reference to the collection
 const dbConnectionStr = process.env.MONGO_URI;
 const dbName = "quotes";
-let quotesCollection;
 
 // Function to connect to MongoDB
-async function connectToDataBase() {
+async function connectToDatabase() {
   try {
     //mongodb client to database
-    const client = MongoClient.connect(dbConnectionStr, {
+    const client = await MongoClient.connect(dbConnectionStr, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     });
@@ -17,10 +17,8 @@ async function connectToDataBase() {
     //Display to acknowledged connection to database
     console.log(`Connected to ${dbName} Database`);
 
-    // Get the reference to the database
+    // Set the database and collection reference
     db = client.db(dbName);
-
-    // Set the reference to the collection
     quotesCollection = db.collection("daily_quotes");
   } catch (error) {
     console.error(`Database connection error: ${err.message}`);
@@ -32,6 +30,7 @@ async function connectToDataBase() {
 function getDb() {
   if (!db)
     throw new Error("Database not initialized. Call connectToDatabase first.");
+  return db;
 }
 
 function getQuotesCollection() {
@@ -39,6 +38,7 @@ function getQuotesCollection() {
     throw new Error(
       "Quotes collection not initialized. Call connectToDatabase first."
     );
+  return quotesCollection;
 }
 
-module.exports = { connectToDataBase, getDb, getQuotesCollection, ObjectId };
+module.exports = { connectToDatabase, getDb, getQuotesCollection, ObjectId };
