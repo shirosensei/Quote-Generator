@@ -573,6 +573,7 @@ footer {
   border-bottom-left-radius: 1px;
   border-bottom-right-radius: 1px;
   margin-top: 4px;
+  cursor: pointer;
 }
 
 .gg-trash::after,
