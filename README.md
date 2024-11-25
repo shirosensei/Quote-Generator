@@ -5,6 +5,10 @@ The Quote API Web App Generator is a web application that allows users to genera
 It leverages an external API to fetch a "Quote of the Day" and provides features such as dark and light modes, generating new quotes, and the ability to store quotes in a MongoDB database. 
 
 
+
+
+![Project Demo](https://gifyu.com/image/SGlTN)
+
 Here's an overview of its functionality:
 
 

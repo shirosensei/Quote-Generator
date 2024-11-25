@@ -104,11 +104,8 @@ app.put("/quotes", async (req, res) => {
           quote: updateQuote,
         });
     })
-    .then((res) => {
-      res.redirect("/");
-      // window.location.reload(true)
-    })
     .catch((error) => console.error(error));
+    res.end();
 });
 
 //DELETE Request to remove quotes from mongodb

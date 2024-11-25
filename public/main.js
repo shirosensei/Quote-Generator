@@ -53,13 +53,8 @@ class Quote {
           quote: quote,
         }),
       });
-      const data = await response.json();
 
-      const li = document.createElement("li");
-      li.innerHTML = `${data.quote} __${data.author}`;
-      li.setAttribute("class", "quotes");
-      quoteList.appendChild(li);
-      return data;
+      return response;
     } catch (err) {
       console.error(err);
     }
@@ -77,13 +72,38 @@ newQuoteBtn.addEventListener("click", async (e) => {
 updateButton.addEventListener("click", async (e) => {
   e.preventDefault();
   const newQuote = new Quote();
-  newQuote.updateMongoDB(authorElement.textContent, quoteElement.textContent);
+  const response = await newQuote.updateMongoDB(
+    authorElement.textContent,
+    quoteElement.textContent
+  );
+
+  if (response && response.ok) {
+    const updatedData = await response.json();
+
+    // Create the new quote element
+    const li = document.createElement("li");
+    li.innerHTML = `${updatedData.quote} __${updatedData.author}`;
+    li.setAttribute("class", "quotes");
+
+    //  Add a trash icon to the new quote
+    const trashIcon = document.createElement("i");
+    trashIcon.setAttribute("class", "gg-trash trash-icon"); // Add FontAwesome class for styling
+    trashIcon.setAttribute("data-quote-id", updatedData.id);
+    trashIcon.style.cursor = "pointer";
+
+    // Append the trash icon to the list item
+    li.appendChild(trashIcon);
+
+    // Add the list item to the DOM
+    quoteList.appendChild(li); // Add to the list dynamically
+  }
 });
 
 //delete quote from mongoDb
 trashIcons.forEach((icon) => {
   icon.addEventListener("click", async (event) => {
     const quoteId = event.target.dataset.quoteId;
+
     const deleted = await deleteQuote(quoteId);
 
     if (deleted) {
@@ -258,7 +278,7 @@ async function getRandomQuote(quotesArray) {
 
 // Function to display current quote of the day
 async function displayQuote(quoteData) {
- const { author, quote } = quoteData;
+  const { author, quote } = quoteData;
   const quoteTextElement = document.getElementById("quoteText");
   const quoteAuthorElement = document.getElementById("quoteAuthor");
   quoteTextElement.textContent = `${quote}`;
@@ -274,7 +294,7 @@ async function updateQuoteOfTheDay() {
   if (lastUpdateDate && has24HourPassed(lastUpdateDate)) {
     // Fetch a new quote
     const quoteData = await fetchQuoteData();
-    console.log('quoteData', quoteData)
+
     await getRandomQuote(quoteData)
       .then((data) => {
         console.log("New quote fetched:", data);
@@ -292,10 +312,9 @@ async function updateQuoteOfTheDay() {
   // Fetch a new quote if none is stored
   else {
     const quoteData = await fetchQuoteData();
-    console.log('quoteData', quoteData)
+
     await getRandomQuote(quoteData)
       .then((data) => {
-        console.log("First-time quote fetched:", data);
         displayQuote(data);
         localStorage.setItem("quoteOfTheDay", JSON.stringify(data));
         localStorage.setItem("quoteOfTheDayLastUpdate", getCurrentDate());
