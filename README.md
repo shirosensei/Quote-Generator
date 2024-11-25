@@ -1,10 +1,11 @@
 
 # Quote API Web App Generator (CRUD) 
 
-The Quote API Web App Generator is a web application that allows users to generate and manage quotes. It leverages an external API to fetch a "Quote of the Day" and provides features such as dark and light modes, generating new quotes, and the ability to store quotes in a MongoDB database. Here's an overview of its functionality:
+The Quote API Web App Generator is a web application that allows users to generate and manage quotes. 
+It leverages an external API to fetch a "Quote of the Day" and provides features such as dark and light modes, generating new quotes, and the ability to store quotes in a MongoDB database. 
 
 
-
+Here's an overview of its functionality:
 
 
 ## Features
@@ -19,13 +20,17 @@ The Quote API Web App Generator is a web application that allows users to genera
 **User Interface:**
 
 The application provides a clean and intuitive user interface where users can interact with various features.
+
 It includes options for switching between dark and light modes, ensuring a visually appealing experience.
+
 The UI displays the current "Quote of the Day" and provides buttons to generate new quotes and manage stored quotes.
 
 **Quote of the Day:**
 
 The application fetches a "Quote of the Day" from an external API. This quote is selected and updated every 24 hours.
+
 The fetched quote is displayed prominently in the UI, providing users with daily inspiration or thought-provoking messages.
+
 Generating New Quotes:
 
 Users can generate new quotes on-demand by clicking a button in the UI.
@@ -52,11 +57,11 @@ This feature ensures that users can continue to receive inspirational or thought
 
 ## Installation
 
-Install my-project with npm
+Install with npm
 
 ```bash
-  npm install my-project
-  cd my-project
+  cd quote-generator
+    npm install
 ```
     
 
