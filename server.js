@@ -1,36 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require('cors');
+const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ObjectId } = require("mongodb");
+const { connectToDatabase, getQuotesCollection, ObjectId } = require("./db");
 const app = express();
 
 app.use(cors());
 
-let db;
-const dbConnectionStr = process.env.MONGO_URI;
-const dbName = "quotes";
-let quotesCollection;
-
-//mongodb client to database
-MongoClient.connect(dbConnectionStr, {
-  useUnifiedTopology: true, useNewUrlParser: true
-})
-  .then((client) => {
-    //Display to acknowledged connection to database
-    console.log(`Connected to ${dbName} Database`);
-
-    // Get the reference to the database
-    db = client.db(dbName);
-
-    // Get the reference to the collection
-    quotesCollection = db.collection("daily_quotes");
-
-    //    console.log(`Connected to ${quotesCollection.collectionName} Database`);
+// Connect to the database when the server starts
+connectToDatabase()
+  .then(() => {
+    console.log("Database connection established");
   })
   .catch((err) => {
-    console.error(`error ${err.message}`)
-    throw err;
+    console.error("Failed to connect to database:", err);
   });
 
 // Set up EJS as the view engine
@@ -44,39 +27,28 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //get handlers for handling index page
-app.get("/", (req, res) => {
-  // Note: __dirname is the current directory you're in. Try logging it and see what you get!
-//   res.sendFile(__dirname + '/views/index');
-
-  quotesCollection
-
-    //This is a find() function that will find the quotes
-    .find()
-    //This is toArray() that will convert the data into an array
-    .toArray()
-
-    .then((results) => {
-      // Use map() to extract the object IDs from the results
-      //      const objectIds = results.map(quote => quote._id);
-
-      // Pass them along with our other arguments so they can be used by the next handler
-      res.render("index.ejs", { quotes: results });
-    })
-
-    .catch((error) => console.error(error));
-
+app.get("/", async (req, res) => {
+  try {
+    const quotesCollection = getQuotesCollection();
+    const quotes = await quotesCollection.find().toArray();
+    res.render("index.ejs", { quotes });
+  } catch (error) {
+    console.error("Error fetching quotes:", error);
+    res.status(500).send("Error fetching quotes");
+  }
 });
 
 //POST handlers for quotes to mongo db
-app.post("/quotes", (req, res) => {
-  quotesCollection
-
+app.post("/quotes", async (req, res) => {
+  try {
+    const quotesCollection = getQuotesCollection();
+    const { author, quote } = req.body;
+    const result = await quotesCollection.insertOne({ author, quote });
     //insertOne method to add items into a MongoDB collection.
-    .insertOne(req.body)
-    .then((result) => {
-      res.redirect("/");
-    })
-    .catch((error) => console.error(error));
+    res.status(201).json(result);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to add quote" });
+  }
 });
 
 //PUT Request to update Quotes
@@ -105,7 +77,6 @@ app.put("/quotes", async (req, res) => {
         });
     })
     .catch((error) => console.error(error));
-    res.end();
 });
 
 //DELETE Request to remove quotes from mongodb
