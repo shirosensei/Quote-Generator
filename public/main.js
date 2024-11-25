@@ -2,7 +2,7 @@
 
 const updateButton = document.getElementById("updateButton");
 const deleteButton = document.querySelector("#deleteButton");
-const messageDiv = document.getElementById("message");
+const messageDiv = document.getElementById("errorMessage");
 const quoteList = document.getElementById("quoteList");
 const quoteContainer = document.getElementById("quote-container");
 const newQuoteBtn = document.getElementById("new-quote-btn");
@@ -35,28 +35,35 @@ class Quote {
     // Render the quote to the DOM
     return this.renderQuote(newQuote);
   }
+
   // Function to render a quote to the DOM
   renderQuote(quote) {
     quoteElement.innerText = quote.quote;
     authorElement.innerText = quote.author;
   }
+
   //Function to update the quote into MongoDB
   async updateMongoDB(author, quote) {
-    try {
-      const response = await fetch(`/quotes`, {
-        method: "put",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          author: author,
-          quote: quote,
-        }),
-      });
+    if (!quote || !author) {
+      displayMessage("Quote and author cannot be empty.", "error");
+      return;
+    } else {
+      try {
+        const response = await fetch(`/quotes`, {
+          method: "put",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            author: author,
+            quote: quote,
+          }),
+        });
 
-      return response;
-    } catch (err) {
-      console.error(err);
+        return response;
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }
@@ -96,6 +103,9 @@ updateButton.addEventListener("click", async (e) => {
 
     // Add the list item to the DOM
     quoteList.appendChild(li); // Add to the list dynamically
+
+    authorElement.textContent = "";
+    quoteElement.textContent = "";
   }
 });
 
@@ -115,6 +125,11 @@ trashIcons.forEach((icon) => {
     }
   });
 });
+
+function displayMessage(message, type) {
+  messageDiv.textContent = message;
+  messageDiv.className = `errorMessage ${type}`;
+}
 
 //function to delete quote
 async function deleteQuote(quoteId) {
@@ -184,10 +199,23 @@ async function fetchRandomQuoteWithTag(tag) {
     const favoriteButton = document.createElement("button");
     favoriteButton.textContent = "Add to Favorite";
 
-    favoriteButton.addEventListener("click", () => {
+    favoriteButton.addEventListener("click", async () => {
       // Add the quote to MongoDB as a favorite
       const newQuote = new Quote();
-      newQuote.updateMongoDB(data.author, data.quote);
+      const result = newQuote.updateMongoDB(data.author, data.quote);
+
+      if (result) {
+        // Clear the displayed quote and author after successful addition
+        const quoteField = document.getElementById("value"); // Assuming #value is for quote
+        const authorField = document.getElementById("key"); // Assuming #key is for author
+
+        quoteField.textContent = "";
+        authorField.textContent = "";
+
+        displayMessage("Quote added to favorites successfully!", "success");
+      } else {
+        displayMessage("Failed to add quote to favorites.", "error");
+      }
     });
 
     quoteDisplay.appendChild(favoriteButton);
@@ -197,17 +225,12 @@ async function fetchRandomQuoteWithTag(tag) {
   }
 }
 
-function displaySearchedQuote(text, author) {
-  const searchQuoteElement = document.createElement("p");
-  searchQuoteElement.textContent = text;
+function displaySearchedQuote(quote, author) {
+  const quoteField = document.getElementById("value");
+  const authorField = document.getElementById("key");
 
-  const searchAuthorElement = document.createElement("p");
-  searchAuthorElement.textContent = `__ ${author}`;
-  searchAuthorElement.style.fontWeight = "bold";
-
-  quoteDisplay.innerHTML = "";
-  quoteDisplay.appendChild(searchQuoteElement);
-  quoteDisplay.appendChild(searchAuthorElement);
+  quoteField.textContent = quote;
+  authorField.textContent = author;
 }
 
 function displayErrorMessage(message) {
