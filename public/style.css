@@ -604,6 +604,23 @@ footer {
   left: -2px;
 }
 
+.errorMessage {
+  display: none;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+.errorMessage.error {
+  display: inline-block;
+  color: rgb(112, 5, 5);
+  background-color: #fdd;
+}
+.message.success {
+  color: rgb(2, 85, 2);
+  background-color: #dfd;
+}
+
+
 @media screen and (max-width: 576px) {
   .mobile-nav {
     display: flex;

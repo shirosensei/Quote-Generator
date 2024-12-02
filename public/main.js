@@ -98,6 +98,19 @@ updateButton.addEventListener("click", async (e) => {
     trashIcon.setAttribute("data-quote-id", updatedData.id);
     trashIcon.style.cursor = "pointer";
 
+    // Attach click event listener to the trash icon
+    trashIcon.addEventListener("click", async (event) => {
+      const quoteId = event.target.dataset.quoteId;
+      const deleted = await deleteQuote(quoteId);
+
+      if (deleted) {
+        const quoteElement = event.target.parentElement;
+        if (quoteElement) {
+          quoteElement.remove();
+        }
+      }
+    });
+
     // Append the trash icon to the list item
     li.appendChild(trashIcon);
 
@@ -194,14 +207,13 @@ async function fetchRandomQuoteWithTag(tag) {
       return Array.isArray(item.tags) && item.tags.includes(tag);
     });
 
-    if (filteredQuotes.length === 0) {
-      displayErrorMessage("No quotes found for the given tag.");
-      return null;
-    }
+    // if (filteredQuotes.length === 0) {
+    //   displayErrorMessage("No quotes found for the given tag.");
+    //   return null;
+    // }
 
     // Randomly pick a quote from the filtered list
-    const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
-    const randomQuote = filteredQuotes[randomIndex];
+    const randomQuote = await getRandomQuote(filteredQuotes);
 
     // Display the quote and author
     displaySearchedQuote(randomQuote.quote, randomQuote.author);

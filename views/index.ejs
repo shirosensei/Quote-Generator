@@ -59,7 +59,7 @@
                 <div class="first">
                     <span class="p-card"> 
                         <h2>Insert Quote</h2>
-                    <form action="/quotes" method="POST">
+                    <form action="/quotes" method="POST" id="qouteForm">
                         <input type="text" placeholder="Name of Author" name="author" autocomplete="off" />
                         <input type="text" placeholder="quote" name="quote" autocomplete="off" />
                         <button type="submit" class="btn customButton small">Add</button>
@@ -77,11 +77,13 @@
                               <p id="value" name="quote"></p>
                               <p id="key" name="author"></p>
                             </span>
+                           
+
                             <button id="new-quote-btn">Generate Quote</button>
                             <button id="updateButton" style="">Add to Favorites</button>    
                             <span id="quoteDisplay"></span>
                         </span>    
-                    
+                        <span id="errorMessage" class="errorMessage"></span>
                     </div>
     
                     <!--

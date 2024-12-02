@@ -21,8 +21,8 @@ async function connectToDatabase() {
     db = client.db(dbName);
     quotesCollection = db.collection("daily_quotes");
   } catch (error) {
-    console.error(`Database connection error: ${err.message}`);
-    throw err;
+    console.error(`Database connection error: ${error.message}`);
+    throw error;
   }
 }
 

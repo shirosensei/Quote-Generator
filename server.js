@@ -45,7 +45,9 @@ app.post("/quotes", async (req, res) => {
     const { author, quote } = req.body;
     const result = await quotesCollection.insertOne({ author, quote });
     //insertOne method to add items into a MongoDB collection.
-    res.status(201).json(result);
+    res.status(201).json({ mesage: "Quote added successfully",
+        author: author,
+        quote: quote, });
   } catch (error) {
     res.status(500).json({ error: "Failed to add quote" });
   }
@@ -53,27 +55,35 @@ app.post("/quotes", async (req, res) => {
 
 //PUT Request to update Quotes
 app.put("/quotes", async (req, res) => {
+    const { author, quote } = req.body;
+
+
+    // Validate input
+  if (!author || !quote || author.trim() === "" || quote.trim() === "") {
+    return res.status(400).json({ message: "Author and quote cannot be empty" });
+  }
+
   try {
     const quotesCollection = getQuotesCollection();
-    const { author, quote } = req.body;
+
     const result = await quotesCollection.findOneAndUpdate(
-      { author },
+      { author },  // Filter by the current author
       {
         $set: {
-          author: updateName || author,
-          quote: updateQuote || quote,
+          author: author,
+          quote: quote,
         },
       },
       {
-        upsert: true,
+        upsert: true, // Create a new document if no match is found
       }
     );
 
     if (result.ok) {
       res.json({
         mesage: "Quote updated successfully",
-        author: updateName || author,
-        quote: updateQuote || quote,
+        author: author,
+        quote: quote,
       });
     } else {
       res.status(500).json({ message: "Failed to update quote" });
